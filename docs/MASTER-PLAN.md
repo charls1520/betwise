@@ -7,13 +7,27 @@
 
 ## Visión
 
-[Se define durante el brainstorming inicial]
+BetWise es un asistente web de apuestas deportivas enfocado en la Premier League. Combina un dashboard con predicciones de valor (basadas en ML) y un chat interactivo con RAG (LlamaIndex/LightRAG) para responder consultas detalladas sobre partidos usando datos históricos y noticias recientes.
 
 ---
 
 ## Sub-proyectos
 
-[Se crean a medida que se planifica]
+### 1. Arquitectura Base (En progreso)
+- [x] Brainstorming y Diseño
+- [ ] Backend FastAPI (Python) con Healthcheck
+- [ ] Modelos iniciales de Base de Datos Relacional
+- [ ] Frontend React (Vite) conectado al Backend
+
+### 2. Motor de Ingesta y Normalización (Pendiente)
+- [ ] Scripts de scraping para estadísticas y cuotas
+- [ ] Motor de normalización difusa de nombres de equipos
+- [ ] Automatización (Cron Jobs) de actualización diaria
+
+### 3. Motor RAG y ML (Pendiente)
+- [ ] Integración de LlamaIndex y base de datos vectorial para noticias
+- [ ] Entrenamiento de modelo ML ligero para predicciones
+- [ ] Interfaz de chat en el Frontend
 
 ---
 
@@ -21,7 +35,7 @@
 
 | Acción | Tipo | Prioridad |
 |--------|------|-----------|
-| Definir la idea con brainstorming | Con IA | Alta |
+| Ejecutar la implementación de la Arquitectura Base | Con IA | Alta |
 
 ---
 
