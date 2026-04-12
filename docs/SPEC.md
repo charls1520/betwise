@@ -33,7 +33,7 @@ BetWise es un asistente de apuestas deportivas híbrido para la Premier League. 
 ## Tecnologías
 
 - **Backend**: Python 3.10+, FastAPI, SQLAlchemy, pytest, thefuzz, python-Levenshtein, scikit-learn, pandas, numpy, joblib.
-- **RAG & IA**: LlamaIndex, Ollama (Llama 3), HuggingFace (BAAI/bge-small-en-v1.5).
+- **RAG & IA**: LlamaIndex, Ollama (Gemma4:26b), HuggingFace (BAAI/bge-small-en-v1.5).
 - **Frontend**: Node.js, React, Vite, TypeScript.
 - **Base de datos**: SQLite, ChromaDB.
 ---
