@@ -27,38 +27,52 @@ export default function DashboardPanel() {
       });
   }, []);
 
-  if (loading) return <div className="w-2/3 p-6">Loading dashboard...</div>;
+  if (loading) return <div className="flex-grow px-6 py-8 text-primary">Loading analytics...</div>;
 
   return (
-    <div className="w-2/3 h-screen p-6 overflow-y-auto">
-      <h2 className="text-2xl font-bold mb-4">Upcoming Matches (Live)</h2>
-      <div className="space-y-4">
+    <main className="flex-grow overflow-y-auto px-6 py-8 bg-background">
+      <div className="flex items-center gap-2 mb-6">
+        <span className="material-symbols-outlined text-primary">sensors</span>
+        <h2 className="text-2xl font-headline font-bold uppercase tracking-tight text-white">Live AI Fixtures</h2>
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {matches.map((match) => (
           match.error ? (
              <div key="err" className="text-red-500">Error: {match.error}</div>
           ) : (
-            <div key={match.id} className="bg-white p-4 rounded shadow border-l-4 border-blue-500">
-              <h3 className="text-lg font-semibold">{match.home_team} vs {match.away_team}</h3>
-              <p className="text-gray-600 mb-2">ML Predictions (1X2)</p>
-              <div className="grid grid-cols-3 gap-4">
-                <div className="bg-blue-50 p-2 rounded text-center">
-                  <span className="block text-xs text-gray-500">Home</span>
-                  <span className="block text-lg font-bold">{(match.prob_home_win * 100).toFixed(1)}%</span>
+            <div key={match.id} className="bg-surface-container-high rounded-xl p-6 relative overflow-hidden group border border-white/5">
+              <div className="flex items-center justify-between mb-6">
+                <div className="flex items-center gap-3">
+                  <span className="font-bold text-sm text-white uppercase">{match.home_team.substring(0, 3)}</span>
+                  <span className="text-on-surface-variant text-xs font-bold">VS</span>
+                  <span className="font-bold text-sm text-white uppercase">{match.away_team.substring(0, 3)}</span>
                 </div>
-                <div className="bg-gray-50 p-2 rounded text-center">
-                  <span className="block text-xs text-gray-500">Draw</span>
-                  <span className="block text-lg font-bold">{(match.prob_draw * 100).toFixed(1)}%</span>
-                </div>
-                <div className="bg-red-50 p-2 rounded text-center">
-                  <span className="block text-xs text-gray-500">Away</span>
-                  <span className="block text-lg font-bold">{(match.prob_away_win * 100).toFixed(1)}%</span>
+                <span className="text-[10px] font-bold text-primary bg-primary/10 px-2 py-1 rounded uppercase">PREMIER LEAGUE</span>
+              </div>
+              
+              <div className="space-y-3">
+                <p className="text-[10px] font-black text-on-surface-variant uppercase">AI 1X2 Probabilities</p>
+                <div className="flex gap-2">
+                  <button className="flex-1 bg-surface py-2 rounded text-center hover:bg-surface-bright border border-outline-variant/30">
+                    <span className="block text-[8px] text-on-surface-variant mb-1">1 (HOME)</span>
+                    <span className="font-headline font-bold text-xs text-primary">{(match.prob_home_win * 100).toFixed(1)}%</span>
+                  </button>
+                  <button className="flex-1 bg-surface py-2 rounded text-center hover:bg-surface-bright border border-outline-variant/30">
+                    <span className="block text-[8px] text-on-surface-variant mb-1">X (DRAW)</span>
+                    <span className="font-headline font-bold text-xs text-white">{(match.prob_draw * 100).toFixed(1)}%</span>
+                  </button>
+                  <button className="flex-1 bg-surface py-2 rounded text-center hover:bg-surface-bright border border-outline-variant/30">
+                    <span className="block text-[8px] text-on-surface-variant mb-1">2 (AWAY)</span>
+                    <span className="font-headline font-bold text-xs text-white">{(match.prob_away_win * 100).toFixed(1)}%</span>
+                  </button>
                 </div>
               </div>
             </div>
           )
         ))}
-        {matches.length === 0 && <p>No upcoming matches found.</p>}
+        {matches.length === 0 && <p className="text-on-surface-variant">No matches found in the datalake.</p>}
       </div>
-    </div>
+    </main>
   );
 }
