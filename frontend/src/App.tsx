@@ -1,21 +1,13 @@
-import { useEffect, useState } from 'react'
+import DashboardPanel from './components/DashboardPanel';
+import ChatPanel from './components/ChatPanel';
 
 function App() {
-  const [apiStatus, setApiStatus] = useState<string>('Loading...')
-
-  useEffect(() => {
-    fetch('http://localhost:8000/')
-      .then(res => res.json())
-      .then(data => setApiStatus(data.message))
-      .catch(() => setApiStatus('API Offline'))
-  }, [])
-
   return (
-    <div style={{ padding: '20px', fontFamily: 'sans-serif' }}>
-      <h1>BetWise Dashboard</h1>
-      <p>Status: {apiStatus}</p>
+    <div className="flex w-full h-screen bg-gray-100">
+      <DashboardPanel />
+      <ChatPanel />
     </div>
-  )
+  );
 }
 
-export default App
+export default App;
