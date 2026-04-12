@@ -16,6 +16,7 @@ BetWise es un asistente de apuestas deportivas híbrido para la Premier League. 
 - **Arquitectura Base**: Backend FastAPI con base de datos relacional (SQLite) y frontend React.
 - **Motor de Ingesta (Data Lake -> ETL)**: Pipeline que permite guardar datos crudos en JSON y normalizar los nombres de los equipos con `thefuzz` antes de pasarlos a la base de datos relacional.
 - **Motor RAG (LlamaIndex)**: Integración local de LlamaIndex con embeddings de HuggingFace, base de datos vectorial ChromaDB y LLM Ollama para responder consultas sobre contexto no estructurado.
+- **Motor de Machine Learning**: Modelos estadísticos independientes (`scikit-learn`) para predecir probabilidades en mercados de Ganador (1X2) y Goles Totales (Over/Under) en base a Goles Esperados (xG).
 
 ---
 
@@ -31,7 +32,7 @@ BetWise es un asistente de apuestas deportivas híbrido para la Premier League. 
 
 ## Tecnologías
 
-- **Backend**: Python 3.10+, FastAPI, SQLAlchemy, pytest, thefuzz, python-Levenshtein.
+- **Backend**: Python 3.10+, FastAPI, SQLAlchemy, pytest, thefuzz, python-Levenshtein, scikit-learn, pandas, numpy, joblib.
 - **RAG & IA**: LlamaIndex, Ollama (Llama 3), HuggingFace (BAAI/bge-small-en-v1.5).
 - **Frontend**: Node.js, React, Vite, TypeScript.
 - **Base de datos**: SQLite, ChromaDB.

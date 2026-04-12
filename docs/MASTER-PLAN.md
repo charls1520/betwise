@@ -37,11 +37,11 @@ BetWise es un asistente web de apuestas deportivas enfocado en la Premier League
 - [x] Cliente API de Cuotas (The-Odds-API)
 - [x] Orquestador de tareas diarias
 
-### 5. Motor de Machine Learning (En progreso)
+### 5. Motor de Machine Learning (Completo)
 - [x] Brainstorming y Diseño ML
-- [ ] Feature Engineering y Extracción de Datos
-- [ ] Entrenamiento de modelos (1X2 y Over/Under)
-- [ ] Pipeline de Inferencia
+- [x] Feature Engineering y Extracción de Datos
+- [x] Entrenamiento de modelos (1X2 y Over/Under)
+- [x] Pipeline de Inferencia
 
 ---
 
@@ -49,8 +49,7 @@ BetWise es un asistente web de apuestas deportivas enfocado en la Premier League
 
 | Acción | Tipo | Prioridad |
 |--------|------|-----------|
-| Ejecutar plan de Machine Learning | Con IA | Alta |
-| Integración final de componentes | Con IA | Media |
+| Integración final de componentes | Con IA | Alta |
 
 ---
 
