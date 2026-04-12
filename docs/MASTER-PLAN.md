@@ -66,14 +66,20 @@ BetWise es un asistente web de apuestas deportivas enfocado en la Premier League
 - [x] Instalar dependencias de Playwright
 - [x] Implementar scraper asíncrono para Understat
 
+### 10. Motor de Fiabilidad y Sugerencias (En progreso)
+- [x] Brainstorming y Diseño de Reglas
+- [ ] Implementar Filtros de Valor y Thresholds
+- [ ] Inicializar RAG con Datos Reales
+- [ ] Integrar Sugerencias en Frontend
+
 ---
 
 ## Próximos pasos
 
 | Acción | Tipo | Prioridad |
 |--------|------|-----------|
-| Testing manual E2E y Bugfixing | Manual/IA | Alta |
-| Recolectar feedback de usuarios | Manual | Media |
+| Ejecutar plan de Motor de Fiabilidad y Sugerencias | Con IA | Alta |
+| Testing manual E2E y Bugfixing | Manual/IA | Media |
 
 ---
 
