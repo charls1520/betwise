@@ -25,7 +25,8 @@ BetWise es un asistente web de apuestas deportivas enfocado en la Premier League
 - [x] Motor de normalización difusa de nombres de equipos
 - [x] Automatización (Cron Jobs) de actualización diaria (ETL Pipeline Básico)
 
-### 3. Motor RAG y ML (Pendiente)
+### 3. Motor RAG y ML (En progreso)
+- [x] Brainstorming y Diseño RAG
 - [ ] Integración de LlamaIndex y base de datos vectorial para noticias
 - [ ] Entrenamiento de modelo ML ligero para predicciones
 - [ ] Interfaz de chat en el Frontend
@@ -36,7 +37,7 @@ BetWise es un asistente web de apuestas deportivas enfocado en la Premier League
 
 | Acción | Tipo | Prioridad |
 |--------|------|-----------|
-| Configurar LlamaIndex | Con IA | Media |
+| Ejecutar plan de LlamaIndex | Con IA | Alta |
 | Implementar Scraping Real | Con IA | Media |
 
 ---
