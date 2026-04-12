@@ -20,13 +20,16 @@ We will use a completely local and free stack for the initial version to minimiz
 * Documents (e.g., scraped news JSONs from the Data Lake) will be loaded using LlamaIndex `SimpleDirectoryReader` or custom Document loaders.
 * Nodes/Chunks will be tagged with rich metadata (e.g., `team_canonical: Arsenal`, `date: 2026-04-11`, `topic: injury`) to allow for hybrid search (Vector + Metadata filtering) in the future.
 
-### 2.4 Query Engine
-* The actual LLM (the "Reader") that synthesizes the retrieved chunks into a human-readable answer is TBD, but the architecture will support hot-swapping between local models (e.g., Ollama) or paid APIs (e.g., OpenAI/Anthropic).
-* For the initial implementation plan, we will focus on building the **Indexing and Retrieval** pipeline first, mocking the final synthesis if necessary to validate retrieval accuracy.
+### 2.4 Query Engine & LLM (Local)
+* The actual LLM (the "Reader") that synthesizes the retrieved chunks into a human-readable answer will run locally via **Ollama**.
+* This enables self-hosting of models like `Llama 3`, `Mistral`, or `Phi-3` completely free and privately.
+* The architecture uses `llama-index-llms-ollama` to connect LlamaIndex with the local Ollama instance.
+* For the initial implementation plan, we will focus on building the **Indexing and Retrieval** pipeline connected to a local Ollama model to generate real context-aware answers.
 
 ## 3. Tech Stack Requirements
 * `llama-index-core`
 * `llama-index-embeddings-huggingface` (for BAAI models)
 * `llama-index-vector-stores-chroma`
+* `llama-index-llms-ollama` (for local LLM synthesis)
 * `chromadb`
 * `transformers` and `torch` (required by HuggingFace embeddings)
