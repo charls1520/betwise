@@ -18,3 +18,10 @@ def test_chat_endpoint():
     data = response.json()
     assert "response" in data
     assert "sources" in data
+
+
+def test_dashboard_endpoint():
+    response = client.get("/api/dashboard")
+    assert response.status_code == 200
+    data = response.json()
+    assert isinstance(data, list)
