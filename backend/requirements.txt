@@ -5,3 +5,8 @@ httpx
 sqlalchemy
 thefuzz
 python-Levenshtein
+llama-index-core
+llama-index-embeddings-huggingface
+llama-index-vector-stores-chroma
+llama-index-llms-ollama
+chromadb
