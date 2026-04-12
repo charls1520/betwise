@@ -18,3 +18,5 @@ numpy
 scikit-learn
 joblib
 python-dotenv
+playwright
+nest-asyncio
