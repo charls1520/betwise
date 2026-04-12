@@ -13,3 +13,7 @@ chromadb
 beautifulsoup4
 feedparser
 tenacity
+pandas
+numpy
+scikit-learn
+joblib
