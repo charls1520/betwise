@@ -72,11 +72,11 @@ BetWise es un asistente web de apuestas deportivas enfocado en la Premier League
 - [x] Inicializar RAG con Datos Reales
 - [x] Integrar Sugerencias en Frontend
 
-### 11. Entrenamiento de Modelo ML con Datos Históricos (En progreso)
+### 11. Entrenamiento de Modelo ML con Datos Históricos (Completo)
 - [x] Brainstorming y Diseño de Entrenamiento
-- [ ] Ingesta de datos históricos desde football-data.co.uk
-- [ ] Actualización de Feature Engineering para histórico
-- [ ] Script de Entrenamiento Real
+- [x] Ingesta de datos históricos desde football-data.co.uk
+- [x] Actualización de Feature Engineering para histórico
+- [x] Script de Entrenamiento Real
 
 ---
 
@@ -84,8 +84,8 @@ BetWise es un asistente web de apuestas deportivas enfocado en la Premier League
 
 | Acción | Tipo | Prioridad |
 |--------|------|-----------|
-| Ejecutar plan de Entrenamiento de Modelo ML | Con IA | Alta |
-| Testing manual E2E y Bugfixing | Manual/IA | Media |
+| Testing manual E2E y Bugfixing | Manual/IA | Alta |
+| Despliegue y Release | Con IA | Media |
 
 ---
 
