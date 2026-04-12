@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { ChatMessage } from '../types';
+import type { ChatMessage } from '../types';
 
 export default function ChatPanel() {
   const [input, setInput] = useState("");
