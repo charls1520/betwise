@@ -29,7 +29,7 @@ BetWise es un asistente web de apuestas deportivas enfocado en la Premier League
 - [x] Brainstorming y Diseño RAG
 - [x] Integración de LlamaIndex y base de datos vectorial para noticias
 - [ ] Entrenamiento de modelo ML ligero para predicciones
-- [ ] Interfaz de chat en el Frontend
+- [x] Interfaz de chat en el Frontend
 
 ---
 
@@ -37,8 +37,8 @@ BetWise es un asistente web de apuestas deportivas enfocado en la Premier League
 
 | Acción | Tipo | Prioridad |
 |--------|------|-----------|
-| Ejecutar plan de Interfaz de chat | Con IA | Alta |
-| Implementar Scraping Real | Con IA | Media |
+| Implementar Scraping Real | Con IA | Alta |
+| Entrenamiento de modelo ML ligero | Con IA | Media |
 
 ---
 
