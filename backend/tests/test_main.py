@@ -38,3 +38,12 @@ def test_app_startup_initializes_rag(monkeypatch):
     from src.main import global_index
 
     assert global_index is not None
+
+
+def test_audit_endpoint():
+    response = client.get("/api/health/audit")
+    assert response.status_code == 200
+    data = response.json()
+    assert "rag_engine" in data
+    assert "ml_engine" in data
+    assert "ingestion_engine" in data

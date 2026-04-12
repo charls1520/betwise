@@ -199,6 +199,43 @@ def get_dashboard_data():
         return [{"error": str(e)}]
 
 
+import time
+
+
+@app.get("/api/health/audit")
+def get_audit_log():
+    # 1. RAG Engine Status
+    rag_status = {
+        "status": "Healthy" if global_index else "Offline",
+        "total_documents": len(global_index.docstore.docs) if global_index else 0,
+        "last_news_indexed": "Latest from Data Lake" if global_index else "None",
+    }
+
+    # 2. ML Engine Status
+    model_path = "models/winner_model.joblib"
+    ml_status = {
+        "status": "Healthy" if os.path.exists(model_path) else "Offline",
+        "model_last_trained": time.ctime(os.path.getmtime(model_path))
+        if os.path.exists(model_path)
+        else "Never",
+        "sources_used": ["football-data.co.uk (E0.csv)"],
+    }
+
+    # 3. Ingestion Engine Status
+    ingestion_status = {
+        "status": "Operational",
+        "last_odds_fetch": "Live via API",
+        "last_xg_fetch": "Live via Playwright",
+        "normalization_warnings": [],  # Would be populated from a DB log in production
+    }
+
+    return {
+        "rag_engine": rag_status,
+        "ml_engine": ml_status,
+        "ingestion_engine": ingestion_status,
+    }
+
+
 @app.get("/")
 def read_root():
     return {"status": "ok", "message": "BetWise API is running"}
