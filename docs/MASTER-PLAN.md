@@ -43,13 +43,19 @@ BetWise es un asistente web de apuestas deportivas enfocado en la Premier League
 - [x] Entrenamiento de modelos (1X2 y Over/Under)
 - [x] Pipeline de Inferencia
 
+### 6. Integración Final (En progreso)
+- [x] Brainstorming y Diseño de Integración
+- [ ] Endpoint unificado de Dashboard
+- [ ] Conexión de Endpoint Chat con RAG
+- [ ] Integración de React con Endpoints Reales
+
 ---
 
 ## Próximos pasos
 
 | Acción | Tipo | Prioridad |
 |--------|------|-----------|
-| Integración final de componentes | Con IA | Alta |
+| Ejecutar plan de Integración Final | Con IA | Alta |
 
 ---
 
