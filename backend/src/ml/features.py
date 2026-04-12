@@ -11,11 +11,25 @@ def build_features_for_matches(raw_matches: list) -> pd.DataFrame:
         return df
 
     # Feature Engineering
-    # In a real scenario, this would use rolling averages. We use raw xg diff for simplicity here.
-    df["xg_diff"] = df.get("home_xg", 0) - df.get("away_xg", 0)
+    # 1. Expected Goals Difference (if available from Understat)
+    if "home_xg" in df.columns and "away_xg" in df.columns:
+        df["xg_diff"] = df["home_xg"] - df["away_xg"]
+    else:
+        # Fallback for historical data without xG (simplification for V1)
+        df["xg_diff"] = 0.0
 
-    # Target Variables
-    if "home_goals" in df.columns and "away_goals" in df.columns:
+    # Target Variables (Historical Training)
+    # football-data.co.uk uses FTR (H, D, A) and FTHG, FTAG
+    if "FTR" in df.columns:
+        # 0: Away, 1: Draw, 2: Home
+        ftr_map = {"A": 0, "D": 1, "H": 2}
+        df["target_1x2"] = df["FTR"].map(ftr_map)
+
+    if "FTHG" in df.columns and "FTAG" in df.columns:
+        df["target_over25"] = ((df["FTHG"] + df["FTAG"]) > 2.5).astype(int)
+
+    # Target Variables (Live/Mock training fallback)
+    elif "home_goals" in df.columns and "away_goals" in df.columns:
         # Match Winner Target (0: Away, 1: Draw, 2: Home)
         def get_1x2(row):
             if row["home_goals"] > row["away_goals"]:

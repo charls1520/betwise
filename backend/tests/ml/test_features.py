@@ -28,3 +28,27 @@ def test_build_features_for_matches():
     assert "xg_diff" in df.columns
     assert "target_1x2" in df.columns
     assert "target_over25" in df.columns
+
+
+def test_build_features_from_historical():
+    data = [
+        {
+            "HomeTeam": "Arsenal",
+            "AwayTeam": "Chelsea",
+            "FTHG": 2,
+            "FTAG": 0,
+            "FTR": "H",
+        },
+        {
+            "HomeTeam": "Chelsea",
+            "AwayTeam": "Arsenal",
+            "FTHG": 1,
+            "FTAG": 1,
+            "FTR": "D",
+        },
+    ]
+    df = build_features_for_matches(data)
+    # The updated function should map FTR to target_1x2
+    assert "target_1x2" in df.columns
+    assert df["target_1x2"].iloc[0] == 2  # Home
+    assert df["target_1x2"].iloc[1] == 1  # Draw
