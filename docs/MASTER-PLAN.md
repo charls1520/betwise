@@ -55,13 +55,19 @@ BetWise es un asistente web de apuestas deportivas enfocado en la Premier League
 - [x] Configurar Tema Tailwind Dark Mode
 - [x] Rediseñar Dashboard y ChatPanel
 
+### 8. Integración Real ML & Scraping (En progreso)
+- [x] Brainstorming y Diseño Scraping/ML Real
+- [ ] Strict Team Normalizer (Threshold 95%)
+- [ ] Understat Scraper (xG Real)
+- [ ] Integrar Data Real en Dashboard Inference
+
 ---
 
 ## Próximos pasos
 
 | Acción | Tipo | Prioridad |
 |--------|------|-----------|
-| Entrenamiento de modelo ML ligero | Con IA | Alta |
+| Ejecutar plan de Integración Real ML & Scraping | Con IA | Alta |
 | Testing manual E2E y Bugfixing | Manual/IA | Media |
 
 ---
