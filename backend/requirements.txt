@@ -3,3 +3,5 @@ uvicorn
 pytest
 httpx
 sqlalchemy
+thefuzz
+python-Levenshtein
