@@ -11,18 +11,49 @@ from src.rag.pipeline import build_index, query_index
 from llama_index.core import Document
 
 import os
+import glob
+import json
 from dotenv import load_dotenv
 
 load_dotenv()
 
 app = FastAPI(title="BetWise API")
 
-# Initialize RAG globally (mocking a real index for now)
+# Initialize RAG globally
 init_llama_index()
-# Create an empty dummy index so it doesn't fail on boot
+
+
+def load_real_documents():
+    docs = []
+    # 1. Load News from Data Lake
+    # Find latest news files
+    raw_dir = "data/raw"
+    if os.path.exists(raw_dir):
+        # Look for news json files in subdirectories
+        news_files = glob.glob(f"{raw_dir}/**/news_*.json", recursive=True)
+        for fpath in news_files:
+            with open(fpath, "r", encoding="utf-8") as f:
+                try:
+                    data = json.load(f)
+                    for article in data.get("articles", []):
+                        text = f"Title: {article.get('title')}\nSummary: {article.get('summary')}"
+                        docs.append(
+                            Document(text=text, metadata={"source": "bbc_news"})
+                        )
+                except Exception:
+                    pass
+
+    if not docs:
+        docs.append(Document(text="System online. Waiting for first data scrape."))
+    return docs
+
+
 try:
-    global_index = build_index([Document(text="Welcome to BetWise.")])
-except Exception:
+    print("Building RAG index from real data...")
+    global_index = build_index(load_real_documents())
+    print("RAG index built successfully.")
+except Exception as e:
+    print(f"Failed to build RAG index: {e}")
     global_index = None
 
 app.add_middleware(

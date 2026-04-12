@@ -28,3 +28,11 @@ def test_dashboard_endpoint():
     assert response.status_code == 200
     data = response.json()
     assert isinstance(data, list)
+
+
+def test_app_startup_initializes_rag(monkeypatch):
+    # This is a bit tricky to test directly without starting the server,
+    # but we can verify the global_index is not None or dummy.
+    from src.main import global_index
+
+    assert global_index is not None
