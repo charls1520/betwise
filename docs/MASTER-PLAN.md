@@ -13,11 +13,11 @@ BetWise es un asistente web de apuestas deportivas enfocado en la Premier League
 
 ## Sub-proyectos
 
-### 1. Arquitectura Base (En progreso)
+### 1. Arquitectura Base (Completo)
 - [x] Brainstorming y Diseño
-- [ ] Backend FastAPI (Python) con Healthcheck
-- [ ] Modelos iniciales de Base de Datos Relacional
-- [ ] Frontend React (Vite) conectado al Backend
+- [x] Backend FastAPI (Python) con Healthcheck
+- [x] Modelos iniciales de Base de Datos Relacional
+- [x] Frontend React (Vite) conectado al Backend
 
 ### 2. Motor de Ingesta y Normalización (Pendiente)
 - [ ] Scripts de scraping para estadísticas y cuotas
@@ -35,7 +35,8 @@ BetWise es un asistente web de apuestas deportivas enfocado en la Premier League
 
 | Acción | Tipo | Prioridad |
 |--------|------|-----------|
-| Ejecutar la implementación de la Arquitectura Base | Con IA | Alta |
+| Implementar motor de scraping | Con IA | Alta |
+| Configurar LlamaIndex | Con IA | Media |
 
 ---
 
