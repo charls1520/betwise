@@ -19,7 +19,8 @@ BetWise es un asistente web de apuestas deportivas enfocado en la Premier League
 - [x] Modelos iniciales de Base de Datos Relacional
 - [x] Frontend React (Vite) conectado al Backend
 
-### 2. Motor de Ingesta y Normalización (Pendiente)
+### 2. Motor de Ingesta y Normalización (En progreso)
+- [x] Brainstorming y Diseño
 - [ ] Scripts de scraping para estadísticas y cuotas
 - [ ] Motor de normalización difusa de nombres de equipos
 - [ ] Automatización (Cron Jobs) de actualización diaria
@@ -35,7 +36,7 @@ BetWise es un asistente web de apuestas deportivas enfocado en la Premier League
 
 | Acción | Tipo | Prioridad |
 |--------|------|-----------|
-| Implementar motor de scraping | Con IA | Alta |
+| Ejecutar plan de Ingesta y Normalización | Con IA | Alta |
 | Configurar LlamaIndex | Con IA | Media |
 
 ---
