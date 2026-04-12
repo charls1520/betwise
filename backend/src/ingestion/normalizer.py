@@ -3,15 +3,18 @@ from typing import List, Optional
 
 
 class TeamNormalizer:
-    def __init__(self, canonical_teams: List[str], threshold: int = 80):
+    def __init__(self, canonical_teams: List[str], threshold: int = 95):
         self.canonical_teams = canonical_teams
         self.threshold = threshold
 
-        # Hardcoded overrides for common aliases that fuzzy matching might miss
+        # Hardcoded, exhaustive overrides for strict matching
         self.manual_overrides = {
             "man utd": "Manchester United",
+            "manchester utd": "Manchester United",
             "man city": "Manchester City",
+            "manchester city": "Manchester City",
             "spurs": "Tottenham Hotspur",
+            "tottenham": "Tottenham Hotspur",
         }
 
     def normalize(self, raw_name: str) -> Optional[str]:
@@ -30,4 +33,9 @@ class TeamNormalizer:
 
         if score >= self.threshold:
             return match
+
+        # Log unmapped team exception here in a real scenario
+        print(
+            f"WARNING: Unmapped team name '{raw_name}' (Score: {score}). Needs manual override."
+        )
         return None

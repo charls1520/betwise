@@ -1,10 +1,11 @@
 from src.ingestion.normalizer import TeamNormalizer
 
 
-def test_normalize_team_name():
+def test_strict_normalize_team_name():
     canonical_teams = ["Manchester United", "Arsenal", "Chelsea"]
-    normalizer = TeamNormalizer(canonical_teams)
+    normalizer = TeamNormalizer(canonical_teams, threshold=95)
 
-    assert normalizer.normalize("Man Utd") == "Manchester United"
-    assert normalizer.normalize("Arsenal FC") == "Arsenal"
-    assert normalizer.normalize("The Blues") is None  # Below confidence threshold
+    assert normalizer.normalize("Man Utd") == "Manchester United"  # via manual override
+    assert (
+        normalizer.normalize("Arsenal Football Club") is None
+    )  # Fails 95% threshold without override
