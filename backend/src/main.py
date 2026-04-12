@@ -4,6 +4,8 @@ from pydantic import BaseModel
 from typing import List, Optional
 from src.ml.inference import predict_matches
 from src.ingestion.scrapers.odds_api import fetch_premier_league_odds
+from src.ingestion.scrapers.understat import fetch_current_xg_stats
+from src.ingestion.normalizer import TeamNormalizer
 from src.rag.config import init_llama_index
 from src.rag.pipeline import build_index, query_index
 from llama_index.core import Document
@@ -73,15 +75,40 @@ def get_dashboard_data():
         # 1. Fetch live odds (using demo key for safety)
         raw_odds = fetch_premier_league_odds(api_key="DEMO_KEY")
 
-        # 2. Add dummy xG data so feature engineering doesn't fail
-        for match in raw_odds:
-            match["home_xg"] = 1.5
-            match["away_xg"] = 1.0
+        # 2. Fetch real xG data
+        xg_stats = fetch_current_xg_stats()
 
-        # 3. Run ML Inference
+        # 3. Normalize and merge
+        # Mocking a canonical list for V1 (ideally this comes from DB)
+        canonical_teams = (
+            list(xg_stats.keys())
+            if xg_stats
+            else [
+                "Arsenal",
+                "Chelsea",
+                "Manchester City",
+                "Manchester United",
+                "Liverpool",
+            ]
+        )
+        normalizer = TeamNormalizer(canonical_teams)
+
+        for match in raw_odds:
+            home_norm = normalizer.normalize(match.get("home_team", ""))
+            away_norm = normalizer.normalize(match.get("away_team", ""))
+
+            # Apply real xG if found, else fallback to 1.0
+            match["home_xg"] = (
+                xg_stats.get(home_norm, {}).get("xg_for_avg", 1.0) if home_norm else 1.0
+            )
+            match["away_xg"] = (
+                xg_stats.get(away_norm, {}).get("xg_for_avg", 1.0) if away_norm else 1.0
+            )
+
+        # 4. Run ML Inference
         predictions = predict_matches(raw_odds, model_dir="models")
 
-        # 4. Merge results
+        # 5. Merge results
         dashboard_data = []
         for idx, match in enumerate(raw_odds):
             pred = predictions[idx] if idx < len(predictions) else {}
