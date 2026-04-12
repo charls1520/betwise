@@ -27,7 +27,9 @@ def test_dashboard_endpoint():
     response = client.get("/api/dashboard")
     assert response.status_code == 200
     data = response.json()
-    assert isinstance(data, list)
+    assert isinstance(data, dict)
+    assert "matches" in data
+    assert "suggestions" in data
 
 
 def test_app_startup_initializes_rag(monkeypatch):

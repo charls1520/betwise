@@ -7,18 +7,40 @@ interface MatchData {
   prob_home_win: number;
   prob_draw: number;
   prob_away_win: number;
+  home_odds: number;
+  home_edge: number;
+  error?: string;
+}
+
+interface Suggestion {
+  market: string;
+  match: string;
+  confidence: string;
+  edge: string;
+  odds: number;
+  reasoning: string;
+}
+
+interface DashboardPayload {
+  matches: MatchData[];
+  suggestions: Suggestion[];
   error?: string;
 }
 
 export default function DashboardPanel() {
-  const [matches, setMatches] = useState<MatchData[]>([]);
+  const [data, setData] = useState<DashboardPayload | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     fetch('http://localhost:8000/api/dashboard')
       .then(res => res.json())
-      .then(data => {
-        setMatches(data);
+      .then(fetchedData => {
+        // Handle case where error is returned as list of dicts from old format
+        if (Array.isArray(fetchedData) && fetchedData.length > 0 && fetchedData[0].error) {
+           setData({ matches: [], suggestions: [], error: fetchedData[0].error });
+        } else {
+           setData(fetchedData as DashboardPayload);
+        }
         setLoading(false);
       })
       .catch(err => {
@@ -27,7 +49,12 @@ export default function DashboardPanel() {
       });
   }, []);
 
-  if (loading) return <main className="flex-grow xl:ml-64 overflow-y-auto px-6 py-8 text-[#6bff8f]">Loading analytics...</main>;
+  if (loading) return <main className="flex-grow xl:ml-64 lg:mr-80 overflow-y-auto px-6 py-8 text-[#6bff8f]">Loading analytics...</main>;
+  if (data?.error) return <div className="text-red-500 p-8">Error: {data.error}</div>;
+  if (!data) return <div className="text-white p-8">No data available</div>;
+
+  const matches = data.matches || [];
+  const suggestions = data.suggestions || [];
 
   return (
     <main className="flex-grow xl:ml-64 overflow-y-auto px-6 py-8">
@@ -50,8 +77,8 @@ export default function DashboardPanel() {
                   <p className="text-2xl font-['Space_Grotesk'] font-bold text-[#6bff8f]">{(matches[0].prob_home_win * 100).toFixed(1)}%</p>
                 </div>
                 <div className="bg-[#152c4e] px-6 py-3 rounded-lg border border-[#3b4861]/10">
-                  <p className="text-[10px] text-[#9eabc8] font-bold">2 (AWAY) PROB</p>
-                  <p className="text-2xl font-['Space_Grotesk'] font-bold text-white">{(matches[0].prob_away_win * 100).toFixed(1)}%</p>
+                  <p className="text-[10px] text-[#9eabc8] font-bold">EDGE</p>
+                  <p className="text-2xl font-['Space_Grotesk'] font-bold text-white">{(matches[0].home_edge * 100).toFixed(1)}%</p>
                 </div>
               </div>
             </div>
@@ -69,7 +96,31 @@ export default function DashboardPanel() {
         </div>
       )}
 
-      {/* Featured Predictions Grid */}
+      {/* AI-Powered Betting Suggestions */}
+      <section className="mb-12">
+        <div className="flex items-center gap-2 mb-6">
+          <span className="material-symbols-outlined text-[#6bff8f]">psychology</span>
+          <h2 className="text-2xl font-['Space_Grotesk'] font-bold uppercase tracking-tight text-white">Verified Value Bets</h2>
+        </div>
+        
+        {suggestions.length === 0 ? (
+            <div className="bg-[#0b203d] p-6 rounded-xl border border-[#3b4861] text-center">
+                <p className="text-[#9eabc8] text-sm">No high-value bets passing the strict 10% edge filter found today. Protect your bankroll.</p>
+            </div>
+        ) : (
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            {suggestions.map((sug, i) => (
+                <div key={i} className="bg-gradient-to-br from-[#0b203d] to-[#010e24] p-5 rounded-xl border border-[#6bff8f]/10 relative">
+                <div className="absolute top-4 right-4 bg-[#6bff8f]/20 text-[#6bff8f] text-[10px] font-bold px-2 py-1 rounded">{sug.confidence} CONFIDENCE</div>
+                <p className="text-[10px] text-[#9eabc8] font-bold mb-1 uppercase">{sug.match}</p>
+                <h4 className="text-white font-bold mb-3">{sug.market}</h4>
+                <p className="text-xs text-[#9eabc8] mb-4">{sug.reasoning} (Edge: {sug.edge})</p>
+                <button className="w-full bg-[#152c4e] py-2 rounded text-[#6bff8f] text-xs font-bold border border-[#6bff8f]/20 hover:bg-[#6bff8f] hover:text-[#002c0f] transition-all">ADD TO SLIP @ {sug.odds}</button>
+                </div>
+            ))}
+            </div>
+        )}
+      </section>
       <div className="mb-12">
         <div className="flex justify-between items-end mb-6">
           <h2 className="text-2xl font-['Space_Grotesk'] font-bold uppercase tracking-tight text-white">Main Soccer Markets</h2>

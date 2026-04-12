@@ -105,6 +105,9 @@ def chat_with_bot(request: ChatRequest):
         return ChatResponse(response=f"Error querying RAG: {e}", sources=[])
 
 
+from src.ml.reliability import calculate_value_edge, meets_data_threshold
+
+
 @app.get("/api/dashboard")
 def get_dashboard_data():
     try:
@@ -147,19 +150,51 @@ def get_dashboard_data():
 
         # 5. Merge results
         dashboard_data = []
+        suggestions = []
         for idx, match in enumerate(raw_odds):
             pred = predictions[idx] if idx < len(predictions) else {}
-            dashboard_data.append(
-                {
-                    "id": idx,
-                    "home_team": match.get("home_team"),
-                    "away_team": match.get("away_team"),
-                    "prob_home_win": pred.get("prob_home_win", 0.33),
-                    "prob_draw": pred.get("prob_draw", 0.33),
-                    "prob_away_win": pred.get("prob_away_win", 0.34),
-                }
-            )
-        return dashboard_data
+
+            home_prob = pred.get("prob_home_win", 0.0)
+            home_odds = 2.0
+
+            bookmakers = match.get("bookmakers", [])
+            if bookmakers and len(bookmakers) > 0:
+                markets = bookmakers[0].get("markets", [])
+                if markets and len(markets) > 0:
+                    outcomes = markets[0].get("outcomes", [])
+                    for outcome in outcomes:
+                        if outcome.get("name") == match.get("home_team"):
+                            home_odds = outcome.get("price", 2.0)
+                            break
+
+            edge = calculate_value_edge(home_prob, home_odds)
+
+            match_obj = {
+                "id": idx,
+                "home_team": match.get("home_team"),
+                "away_team": match.get("away_team"),
+                "prob_home_win": home_prob,
+                "prob_draw": pred.get("prob_draw", 0.0),
+                "prob_away_win": pred.get("prob_away_win", 0.0),
+                "home_odds": home_odds,
+                "home_edge": edge,
+            }
+            dashboard_data.append(match_obj)
+
+            home_norm = normalizer.normalize(match.get("home_team", ""))
+            if edge > 0.10 and meets_data_threshold(home_norm, xg_stats):
+                suggestions.append(
+                    {
+                        "market": "1X2 Home Win",
+                        "match": f"{match.get('home_team')} vs {match.get('away_team')}",
+                        "confidence": f"{home_prob * 100:.0f}%",
+                        "edge": f"{edge * 100:.1f}%",
+                        "odds": home_odds,
+                        "reasoning": "High value edge detected against bookmaker implied probability.",
+                    }
+                )
+
+        return {"matches": dashboard_data, "suggestions": suggestions}
     except Exception as e:
         return [{"error": str(e)}]
 
