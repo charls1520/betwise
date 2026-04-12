@@ -31,11 +31,11 @@ BetWise es un asistente web de apuestas deportivas enfocado en la Premier League
 - [ ] Entrenamiento de modelo ML ligero para predicciones
 - [x] Interfaz de chat en el Frontend
 
-### 4. Fuentes de Datos Reales (En progreso)
+### 4. Fuentes de Datos Reales (Completo)
 - [x] Brainstorming y Diseño Scraping
-- [ ] Scraper de Noticias RSS (BBC)
-- [ ] Cliente API de Cuotas (The-Odds-API)
-- [ ] Orquestador de tareas diarias
+- [x] Scraper de Noticias RSS (BBC)
+- [x] Cliente API de Cuotas (The-Odds-API)
+- [x] Orquestador de tareas diarias
 
 ---
 
@@ -43,8 +43,8 @@ BetWise es un asistente web de apuestas deportivas enfocado en la Premier League
 
 | Acción | Tipo | Prioridad |
 |--------|------|-----------|
-| Ejecutar plan de Scraping Real | Con IA | Alta |
-| Entrenamiento de modelo ML ligero | Con IA | Media |
+| Entrenamiento de modelo ML ligero | Con IA | Alta |
+| Integración de los flujos RAG/ML | Con IA | Media |
 
 ---
 
