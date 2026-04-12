@@ -61,14 +61,19 @@ BetWise es un asistente web de apuestas deportivas enfocado en la Premier League
 - [x] Understat Scraper (xG Real)
 - [x] Integrar Data Real en Dashboard Inference
 
+### 9. Motor de Scraping con Playwright (En progreso)
+- [x] Brainstorming y Diseño de Scraper con Navegador Headless
+- [ ] Instalar dependencias de Playwright
+- [ ] Implementar scraper asíncrono para Understat
+
 ---
 
 ## Próximos pasos
 
 | Acción | Tipo | Prioridad |
 |--------|------|-----------|
-| Testing manual E2E y Bugfixing | Manual/IA | Alta |
-| Recolectar feedback de usuarios | Manual | Media |
+| Ejecutar plan de Playwright Scraper | Con IA | Alta |
+| Testing manual E2E y Bugfixing | Manual/IA | Media |
 
 ---
 
