@@ -49,13 +49,19 @@ BetWise es un asistente web de apuestas deportivas enfocado en la Premier League
 - [x] Conexión de Endpoint Chat con RAG
 - [x] Integración de React con Endpoints Reales
 
+### 7. Rediseño UI y Modelo Gemma (En progreso)
+- [x] Brainstorming y Diseño UI/Gemma
+- [ ] Actualizar LlamaIndex a Gemma4:26b
+- [ ] Configurar Tema Tailwind Dark Mode
+- [ ] Rediseñar Dashboard y ChatPanel
+
 ---
 
 ## Próximos pasos
 
 | Acción | Tipo | Prioridad |
 |--------|------|-----------|
-| Testing manual E2E y Bugfixing | Manual/IA | Alta |
+| Ejecutar plan de Rediseño UI y Gemma | Con IA | Alta |
 | Recolectar feedback de usuarios | Manual | Media |
 
 ---
