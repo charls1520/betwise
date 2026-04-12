@@ -3,7 +3,7 @@ import ChatPanel from './components/ChatPanel';
 
 function App() {
   return (
-    <div className="flex w-full h-screen bg-gray-100">
+    <div className="flex w-full h-screen bg-background overflow-hidden">
       <DashboardPanel />
       <ChatPanel />
     </div>
