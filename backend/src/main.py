@@ -4,8 +4,19 @@ from pydantic import BaseModel
 from typing import List, Optional
 from src.ml.inference import predict_matches
 from src.ingestion.scrapers.odds_api import fetch_premier_league_odds
+from src.rag.config import init_llama_index
+from src.rag.pipeline import build_index, query_index
+from llama_index.core import Document
 
 app = FastAPI(title="BetWise API")
+
+# Initialize RAG globally (mocking a real index for now)
+init_llama_index()
+# Create an empty dummy index so it doesn't fail on boot
+try:
+    global_index = build_index([Document(text="Welcome to BetWise.")])
+except Exception:
+    global_index = None
 
 app.add_middleware(
     CORSMiddleware,
@@ -36,15 +47,24 @@ class ChatResponse(BaseModel):
 
 @app.post("/api/chat", response_model=ChatResponse)
 def chat_with_bot(request: ChatRequest):
-    # Mocked RAG response
-    return ChatResponse(
-        response=f"Received your query: '{request.message}'. The RAG pipeline is being integrated.",
-        sources=[
-            SourceModel(
-                type="news", title="System", snippet="RAG backend integration pending."
-            )
-        ],
-    )
+    if not global_index:
+        return ChatResponse(response="RAG Index not initialized.", sources=[])
+
+    try:
+        # Call real RAG pipeline
+        import src.rag.pipeline as pipeline
+
+        answer = pipeline.query_index(global_index, request.message)
+        return ChatResponse(
+            response=str(answer),
+            sources=[
+                SourceModel(
+                    type="news", title="RAG Context", snippet="Queried local DB"
+                )
+            ],
+        )
+    except Exception as e:
+        return ChatResponse(response=f"Error querying RAG: {e}", sources=[])
 
 
 @app.get("/api/dashboard")
