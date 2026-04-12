@@ -10,6 +10,11 @@ from src.rag.config import init_llama_index
 from src.rag.pipeline import build_index, query_index
 from llama_index.core import Document
 
+import os
+from dotenv import load_dotenv
+
+load_dotenv()
+
 app = FastAPI(title="BetWise API")
 
 # Initialize RAG globally (mocking a real index for now)
@@ -72,8 +77,9 @@ def chat_with_bot(request: ChatRequest):
 @app.get("/api/dashboard")
 def get_dashboard_data():
     try:
-        # 1. Fetch live odds (using demo key for safety)
-        raw_odds = fetch_premier_league_odds(api_key="DEMO_KEY")
+        # 1. Fetch live odds
+        api_key = os.getenv("ODDS_API_KEY", "DEMO_KEY")
+        raw_odds = fetch_premier_league_odds(api_key=api_key)
 
         # 2. Fetch real xG data
         xg_stats = fetch_current_xg_stats()

@@ -1,3 +1,4 @@
+import os
 from llama_index.core import Settings
 from llama_index.embeddings.huggingface import HuggingFaceEmbedding
 from llama_index.llms.ollama import Ollama
@@ -9,4 +10,5 @@ def init_llama_index():
     Settings.embed_model = HuggingFaceEmbedding(model_name="BAAI/bge-small-en-v1.5")
 
     # Use local Ollama instance for the reader/generator
-    Settings.llm = Ollama(model="gemma4:26b", request_timeout=120.0)
+    model_name = os.getenv("OLLAMA_MODEL", "gemma4:26b")
+    Settings.llm = Ollama(model=model_name, request_timeout=120.0)

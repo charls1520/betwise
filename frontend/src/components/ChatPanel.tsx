@@ -8,7 +8,7 @@ export default function ChatPanel() {
     {
       id: "1",
       role: "bot",
-      content: "Analyzing Featured vs Opponent... I've detected a significant value spike on Featured to score next. The probability is 68% against odds of 2.45."
+      content: "System online. I am your Soccer AI Analyst. What matches are we analyzing today?"
     }
   ]);
 
