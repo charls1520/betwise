@@ -12,4 +12,4 @@ def test_init_llama_index():
     assert Settings.embed_model.model_name == "BAAI/bge-small-en-v1.5"
 
     assert isinstance(Settings.llm, Ollama)
-    assert Settings.llm.model == "llama3"
+    assert Settings.llm.model == "gemma4:26b"

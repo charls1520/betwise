@@ -9,4 +9,4 @@ def init_llama_index():
     Settings.embed_model = HuggingFaceEmbedding(model_name="BAAI/bge-small-en-v1.5")
 
     # Use local Ollama instance for the reader/generator
-    Settings.llm = Ollama(model="llama3", request_timeout=60.0)
+    Settings.llm = Ollama(model="gemma4:26b", request_timeout=120.0)
