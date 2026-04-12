@@ -4,7 +4,8 @@ from llama_index.embeddings.huggingface import HuggingFaceEmbedding
 from llama_index.llms.ollama import Ollama
 
 
-def test_init_llama_index():
+def test_init_llama_index(monkeypatch):
+    monkeypatch.setenv("OLLAMA_MODEL", "gemma4:26b")
     # Calling the init function should configure the global Settings
     init_llama_index()
 
