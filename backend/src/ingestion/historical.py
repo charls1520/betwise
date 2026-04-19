@@ -40,7 +40,7 @@ def download_football_data_co_uk(seasons: list = ["2324", "2223", "2122"]) -> pd
             normalizer = TeamNormalizer(df_understat['Team'].unique().tolist() if not df_understat.empty else [])
             
             # Prepare Elo cache
-            teams = df['HomeTeam'].unique().tolist()
+            teams = pd.concat([df['HomeTeam'], df['AwayTeam']]).unique().tolist()
             elo_cache = {}
             for t in teams:
                 norm_t = normalizer.normalize(t)
@@ -85,5 +85,7 @@ def download_football_data_co_uk(seasons: list = ["2324", "2223", "2122"]) -> pd
 
     if dfs:
         final_df = pd.concat(dfs, ignore_index=True)
+        print("Final DF Before Dropna:")
+        print(final_df[['HomeTeam', 'AwayTeam', 'Date', 'Home_xG', 'Away_xG', 'Home_Elo', 'Away_Elo']])
         return final_df.dropna(subset=['Home_xG', 'Away_xG', 'Home_Elo', 'Away_Elo'])
     return pd.DataFrame()

@@ -8,6 +8,7 @@ def test_predict_matches(tmp_path):
     df_train = pd.DataFrame(
         {
             "xg_diff": [1.0, -0.5, 0.2, 2.5, -1.5, 0.0],
+            "elo_diff": [100, -50, 20, 250, -150, 0],
             "target_1x2": [2, 0, 1, 2, 0, 1],
             "target_over25": [1, 0, 0, 1, 1, 0],
         }
@@ -23,6 +24,8 @@ def test_predict_matches(tmp_path):
                 "away_team": "Chelsea",
                 "home_xg": 2.0,
                 "away_xg": 0.5,
+                "home_elo": 1800,
+                "away_elo": 1700,
             }
         ]
     )

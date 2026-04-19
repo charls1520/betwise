@@ -10,7 +10,10 @@ def predict_matches(raw_matches: list, model_dir: str = "models") -> list:
     if df.empty:
         return []
 
-    features = ["xg_diff"]
+    features = ["xg_diff", "elo_diff"]
+    for col in features:
+        if col not in df.columns:
+            df[col] = 0
     X = df[features]
 
     winner_model_path = os.path.join(model_dir, "winner_model.joblib")

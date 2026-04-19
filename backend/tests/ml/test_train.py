@@ -8,6 +8,7 @@ def test_train_and_save_models(tmp_path):
     df = pd.DataFrame(
         {
             "xg_diff": [1.0, -0.5, 0.2, 2.5, -1.5, 0.0],
+            "elo_diff": [100, -50, 20, 250, -150, 0],
             "target_1x2": [2, 0, 1, 2, 0, 1],
             "target_over25": [1, 0, 0, 1, 1, 0],
         }

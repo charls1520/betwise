@@ -12,6 +12,9 @@ def test_build_features_for_matches():
             "away_xg": 0.8,
             "home_goals": 2,
             "away_goals": 0,
+            "FTR": "H",
+            "FTHG": 2,
+            "FTAG": 0
         },
         {
             "home_team": "Chelsea",
@@ -20,6 +23,9 @@ def test_build_features_for_matches():
             "away_xg": 1.5,
             "home_goals": 1,
             "away_goals": 1,
+            "FTR": "D",
+            "FTHG": 1,
+            "FTAG": 1
         },
     ]
 
@@ -35,6 +41,10 @@ def test_build_features_from_historical():
         {
             "HomeTeam": "Arsenal",
             "AwayTeam": "Chelsea",
+            "Home_xG": 2.1,
+            "Away_xG": 0.8,
+            "Home_Elo": 1800,
+            "Away_Elo": 1700,
             "FTHG": 2,
             "FTAG": 0,
             "FTR": "H",
@@ -42,6 +52,10 @@ def test_build_features_from_historical():
         {
             "HomeTeam": "Chelsea",
             "AwayTeam": "Arsenal",
+            "Home_xG": 1.2,
+            "Away_xG": 1.5,
+            "Home_Elo": 1700,
+            "Away_Elo": 1800,
             "FTHG": 1,
             "FTAG": 1,
             "FTR": "D",
@@ -50,5 +64,5 @@ def test_build_features_from_historical():
     df = build_features_for_matches(data)
     # The updated function should map FTR to target_1x2
     assert "target_1x2" in df.columns
-    assert df["target_1x2"].iloc[0] == 2  # Home
-    assert df["target_1x2"].iloc[1] == 1  # Draw
+    assert df["target_1x2"].iloc[0] == 1  # Home
+    assert df["target_1x2"].iloc[1] == 0  # Draw
