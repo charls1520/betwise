@@ -84,6 +84,21 @@ BetWise es un asistente web de apuestas deportivas enfocado en la Premier League
 - [x] Modal Frontend de System Health
 - [x] Integración en la Interfaz
 
+### 13. Dockerización del Entorno de Desarrollo (Completo)
+- [x] Brainstorming y Diseño de Arquitectura Local
+- [x] Configurar `docker-compose.yml` para PostgreSQL y ChromaDB
+- [x] Crear Dockerfiles de desarrollo para Frontend y Backend
+- [x] Extraer variables de entorno a `.env`
+- [x] Actualizar documentación y README
+
+### 14. Cron Jobs, Scrapling y Mejora de Ingesta (Pendiente)
+- [ ] Brainstorming y Diseño de Ingesta y Validación (Completo)
+- [ ] Integrar APScheduler en FastAPI
+- [ ] Validadores anti-basura estrictos con Pydantic y reglas heurísticas
+- [ ] Reemplazar scraping estático con motor dinámico `Scrapling`
+- [ ] Agregar nuevo scraper para `clubelo.com` y entrenar con nuevas métricas
+- [ ] Configurar job semanal de retraining de Machine Learning
+
 ---
 
 ## Próximos pasos

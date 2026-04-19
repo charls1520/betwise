@@ -17,7 +17,15 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-app = FastAPI(title="BetWise API")
+from contextlib import asynccontextmanager
+from src.ingestion.scheduler import start_scheduler
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    start_scheduler()
+    yield
+
+app = FastAPI(title="BetWise API", lifespan=lifespan)
 
 # Initialize RAG globally
 init_llama_index()
@@ -119,31 +127,22 @@ def get_dashboard_data():
         xg_stats = fetch_current_xg_stats()
 
         # 3. Normalize and merge
-        # Mocking a canonical list for V1 (ideally this comes from DB)
-        canonical_teams = (
-            list(xg_stats.keys())
-            if xg_stats
-            else [
-                "Arsenal",
-                "Chelsea",
-                "Manchester City",
-                "Manchester United",
-                "Liverpool",
-            ]
-        )
+        # Normalizer
+        canonical_teams = list(xg_stats.keys()) if xg_stats else []
         normalizer = TeamNormalizer(canonical_teams)
 
         for match in raw_odds:
             home_norm = normalizer.normalize(match.get("home_team", ""))
             away_norm = normalizer.normalize(match.get("away_team", ""))
 
-            # Apply real xG if found, else fallback to 1.0
-            match["home_xg"] = (
-                xg_stats.get(home_norm, {}).get("xg_for_avg", 1.0) if home_norm else 1.0
-            )
-            match["away_xg"] = (
-                xg_stats.get(away_norm, {}).get("xg_for_avg", 1.0) if away_norm else 1.0
-            )
+            # Apply real xG if found, else raise Exception (No mock data allowed)
+            if not home_norm or home_norm not in xg_stats:
+                raise ValueError(f"Real xG data not found for home team: {match.get('home_team')}")
+            if not away_norm or away_norm not in xg_stats:
+                raise ValueError(f"Real xG data not found for away team: {match.get('away_team')}")
+
+            match["home_xg"] = xg_stats[home_norm].get("xg_for_avg")
+            match["away_xg"] = xg_stats[away_norm].get("xg_for_avg")
 
         # 4. Run ML Inference
         predictions = predict_matches(raw_odds, model_dir="models")

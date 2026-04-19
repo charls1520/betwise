@@ -15,9 +15,5 @@ def fetch_premier_league_odds(api_key: str = "DEMO_KEY") -> list:
     }
 
     response = requests.get(url, params=params)
-    # If using DEMO_KEY, just return a mock response to avoid real failures if key isn't provided
-    if api_key == "DEMO_KEY" and response.status_code == 401:
-        return [{"home_team": "Arsenal", "away_team": "Chelsea", "bookmakers": []}]
-
     response.raise_for_status()
     return response.json()

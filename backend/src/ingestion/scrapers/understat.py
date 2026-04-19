@@ -8,19 +8,6 @@ from tenacity import retry, stop_after_attempt, wait_fixed
 # Patch asyncio to allow nested event loops (useful for FastAPI/Jupyter)
 nest_asyncio.apply()
 
-
-def get_fallback_xg_data() -> dict:
-    """Returns realistic 2024/25 xG data if Understat is totally unreachable."""
-    return {
-        "Arsenal": {"xg_for_avg": 2.15, "xg_against_avg": 0.82},
-        "Manchester City": {"xg_for_avg": 2.30, "xg_against_avg": 0.95},
-        "Liverpool": {"xg_for_avg": 2.45, "xg_against_avg": 1.10},
-        "Chelsea": {"xg_for_avg": 1.95, "xg_against_avg": 1.35},
-        "Tottenham Hotspur": {"xg_for_avg": 1.85, "xg_against_avg": 1.40},
-        "Manchester United": {"xg_for_avg": 1.65, "xg_against_avg": 1.55},
-    }
-
-
 async def _fetch_understat_async() -> dict:
     url = "https://understat.com/league/EPL"
 
@@ -79,7 +66,7 @@ async def _fetch_understat_async() -> dict:
 
         except Exception as e:
             print(f"Playwright Scraper Error: {e}")
-            return get_fallback_xg_data()
+            raise e
         finally:
             await browser.close()
 

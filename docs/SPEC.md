@@ -24,16 +24,18 @@ BetWise es un asistente de apuestas deportivas híbrido para la Premier League. 
 
 - **Backend**: FastAPI (Python) que expone una API REST para el frontend.
 - **Frontend**: React (Vite) en TypeScript.
-- **Base de Datos**: SQLite para el desarrollo inicial de modelos relacionales (Equipos).
-- **Base de Datos Vectorial**: ChromaDB local integrada en el backend.
+- **Base de Datos**: PostgreSQL para persistencia relacional (Equipos).
+- **Base de Datos Vectorial**: ChromaDB local.
 - **Enfoque de Arquitectura**: Monolito Python ("Python-First") que sirve datos y maneja los procesos de IA (LlamaIndex + Ollama) y web scraping.
+- **Infraestructura Local**: Docker y Docker Compose para orquestar el entorno de desarrollo (PostgreSQL, ChromaDB, Frontend y Backend), manteniendo Ollama ejecutado nativamente en la máquina host.
 
 ---
 
 ## Tecnologías
 
-- **Backend**: Python 3.10+, FastAPI, SQLAlchemy, pytest, thefuzz, python-Levenshtein, scikit-learn, pandas, numpy, joblib.
-- **RAG & IA**: LlamaIndex, Ollama (Gemma4:26b), HuggingFace (BAAI/bge-small-en-v1.5).
-- **Frontend**: Node.js, React, Vite, TypeScript.
-- **Base de datos**: SQLite, ChromaDB.
+- **Backend**: Python 3.11+, FastAPI, SQLAlchemy, pytest, thefuzz, python-Levenshtein, scikit-learn, pandas, numpy, joblib.
+- **RAG & IA**: LlamaIndex, Ollama (ejecutado en host), HuggingFace.
+- **Frontend**: Node.js 20+, React, Vite, TypeScript, Tailwind CSS.
+- **Base de datos**: PostgreSQL, ChromaDB.
+- **Infraestructura**: Docker, Docker Compose.
 ---
