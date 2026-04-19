@@ -10,8 +10,8 @@ def train_and_save_models(df: pd.DataFrame, model_dir: str = "models"):
     """Trains independent models for each market and saves them."""
     os.makedirs(model_dir, exist_ok=True)
 
-    # We will use xg_diff as the primary feature
-    features = ["xg_diff"]
+    # We will use xg_diff and elo_diff as primary features
+    features = ["xg_diff", "elo_diff"]
 
     # Fill missing features with 0 for safety
     X = df[features].fillna(0)
