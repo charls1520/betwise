@@ -91,13 +91,20 @@ BetWise es un asistente web de apuestas deportivas enfocado en la Premier League
 - [x] Extraer variables de entorno a `.env`
 - [x] Actualizar documentación y README
 
-### 14. Cron Jobs, Scrapling y Mejora de Ingesta (Pendiente)
-- [ ] Brainstorming y Diseño de Ingesta y Validación (Completo)
-- [ ] Integrar APScheduler en FastAPI
-- [ ] Validadores anti-basura estrictos con Pydantic y reglas heurísticas
-- [ ] Reemplazar scraping estático con motor dinámico `Scrapling`
-- [ ] Agregar nuevo scraper para `clubelo.com` y entrenar con nuevas métricas
-- [ ] Configurar job semanal de retraining de Machine Learning
+### 14. Cron Jobs, Scrapling y Mejora de Ingesta (Completo)
+- [x] Brainstorming y Diseño de Ingesta y Validación (Completo)
+- [x] Integrar APScheduler en FastAPI
+- [x] Validadores anti-basura estrictos con Pydantic y reglas heurísticas
+- [x] Reemplazar scraping estático con motor dinámico `Scrapling`
+- [x] Agregar nuevo scraper para `clubelo.com` y entrenar con nuevas métricas
+- [x] Configurar job semanal de retraining de Machine Learning
+
+### 15. Entrenamiento con xG y Elo Históricos (Pendiente)
+- [x] Brainstorming y Diseño de Ingesta Histórica (Completo)
+- [ ] Desarrollar Scraper histórico para Clubelo
+- [ ] Desarrollar Scraper histórico (Scrapling) para Understat
+- [ ] Unir (Merge) datos de football-data.co.uk con Clubelo y Understat
+- [ ] Entrenar modelo usando features `xg_diff` y `elo_diff`
 
 ---
 
