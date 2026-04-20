@@ -18,9 +18,9 @@ def test_download_football_data_co_uk(monkeypatch, tmp_path):
     monkeypatch.setattr("requests.get", lambda url, timeout=None: MockResponse())
     
     # Mock the new dependent functions
-    monkeypatch.setattr("src.ingestion.historical.fetch_understat_historical_season", 
-                        lambda year: pd.DataFrame([{"Team": "Arsenal", "Date": pd.to_datetime("2023-08-12"), "xG": 2.0, "xGA": 1.0},
-                                                   {"Team": "Nottingham Forest", "Date": pd.to_datetime("2023-08-12"), "xG": 1.0, "xGA": 2.0}]))
+    monkeypatch.setattr("src.ingestion.historical.fetch_understat_historical_season",
+                        lambda year, league: pd.DataFrame([{"Team": "Arsenal", "Date": pd.to_datetime("2023-08-12"), "xG": 2.0, "xGA": 1.0},
+                                                       {"Team": "Nottingham Forest", "Date": pd.to_datetime("2023-08-12"), "xG": 1.0, "xGA": 2.0}]))
     monkeypatch.setattr("src.ingestion.historical.fetch_clubelo_history", 
                         lambda club: pd.DataFrame([{"From": pd.to_datetime("2023-08-01"), "To": pd.to_datetime("2023-08-31"), "Elo": 1800}]))
 
@@ -40,7 +40,8 @@ def test_download_football_data_co_uk(monkeypatch, tmp_path):
             return original_join(str(tmp_path), *args[1:])
         return original_join(*args)
     monkeypatch.setattr("os.path.join", safe_join)
-
+    monkeypatch.setenv("EMBEDDING_MODEL_NAME", "BAAI/bge-small-en-v1.5")
+    
     from src.rag.config import init_llama_index
     init_llama_index()
 
