@@ -124,12 +124,19 @@ BetWise es un asistente web de apuestas deportivas enfocado en la Premier League
 - [x] Implementar integración con LLM (Ollama) para resolver nombres con bajo threshold
 - [x] Actualizar tests unitarios con mocks de caché y llamadas LLM
 
-### 19. Intelligent Chat RAG con Integración de ML (Pendiente)
+### 19. Intelligent Chat RAG con Integración de ML (Completo)
 - [x] Brainstorming y Diseño de Integración (Completo)
-- [ ] Refactorizar API para exponer cálculos de *Value Edge* en local
-- [ ] Inyectar resultados de ML y contexto matemático en Prompt de Chat
-- [ ] Aplicar Normalizador (Auto-Healing) sobre el input del usuario
-- [ ] Validar Chat E2E (Sin consumo de API externa)
+- [x] Refactorizar API para exponer cálculos de *Value Edge* en local
+- [x] Inyectar resultados de ML y contexto matemático en Prompt de Chat
+- [x] Aplicar Normalizador (Auto-Healing) sobre el input del usuario
+- [x] Validar Chat E2E (Sin consumo de API externa)
+
+### 20. Integración Dinámica de OpenRouter (Pendiente)
+- [x] Brainstorming y Diseño de Integración (Completo)
+- [ ] Refactorizar `config.py` para cargar dinámicamente el modelo según `.env`
+- [ ] Configurar variables `OPENROUTER_API_KEY` y `LLM_MODEL_NAME`
+- [ ] Instalar soporte para OpenAI en LlamaIndex (`llama-index-llms-openai`)
+- [ ] Actualizar y ejecutar tests de configuración de RAG
 
 ---
 
