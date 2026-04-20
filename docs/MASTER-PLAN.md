@@ -131,12 +131,12 @@ BetWise es un asistente web de apuestas deportivas enfocado en la Premier League
 - [x] Aplicar Normalizador (Auto-Healing) sobre el input del usuario
 - [x] Validar Chat E2E (Sin consumo de API externa)
 
-### 20. Integración Dinámica de OpenRouter (Pendiente)
+### 20. Integración Dinámica de OpenRouter (Completo)
 - [x] Brainstorming y Diseño de Integración (Completo)
-- [ ] Refactorizar `config.py` para cargar dinámicamente el modelo según `.env`
-- [ ] Configurar variables `OPENROUTER_API_KEY` y `LLM_MODEL_NAME`
-- [ ] Instalar soporte para OpenAI en LlamaIndex (`llama-index-llms-openai`)
-- [ ] Actualizar y ejecutar tests de configuración de RAG
+- [x] Refactorizar `config.py` para cargar dinámicamente el modelo según `.env`
+- [x] Configurar variables `OPENROUTER_API_KEY` y `LLM_MODEL_NAME`
+- [x] Instalar soporte para OpenAI en LlamaIndex (`llama-index-llms-openai`)
+- [x] Actualizar y ejecutar tests de configuración de RAG
 
 ---
 
