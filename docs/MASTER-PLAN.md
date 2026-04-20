@@ -112,11 +112,17 @@ BetWise es un asistente web de apuestas deportivas enfocado en la Premier League
 - [x] Evitar consultas reduntantes a APIs
 - [x] Validación estricta anti-vacíos (Cero Vacíos)
 
-### 17. Filtro Temporal Estricto (48 Horas) (Pendiente)
+### 17. Filtro Temporal Estricto (48 Horas) (Completo)
 - [x] Brainstorming y Diseño de Filtro Temporal (Completo)
-- [ ] Configurar scraper de Odds API para filtrar `commence_time` a 48h máximo
-- [ ] Implementar zona horaria `America/Bogota` (UTC-5) para todas las validaciones
-- [ ] Actualizar tests para reflejar el filtro de 48 horas
+- [x] Configurar scraper de Odds API para filtrar `commence_time` a 48h máximo
+- [x] Implementar zona horaria `America/Bogota` (UTC-5) para todas las validaciones
+- [x] Actualizar tests para reflejar el filtro de 48 horas
+
+### 18. Auto-Healing Team Normalizer via LLM (Pendiente)
+- [x] Brainstorming y Diseño de Auto-Healing (Completo)
+- [ ] Reescribir `TeamNormalizer` para cargar/guardar alias desde `team_aliases.json`
+- [ ] Implementar integración con LLM (Ollama) para resolver nombres con bajo threshold
+- [ ] Actualizar tests unitarios con mocks de caché y llamadas LLM
 
 ---
 
