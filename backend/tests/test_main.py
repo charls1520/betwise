@@ -1,3 +1,7 @@
+import os
+# Set default embed model for tests before importing main to avoid HF model download errors
+os.environ["EMBEDDING_MODEL_NAME"] = "BAAI/bge-small-en-v1.5"
+
 from fastapi.testclient import TestClient
 from src.main import app
 
