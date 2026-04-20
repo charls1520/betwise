@@ -28,17 +28,21 @@ def test_download_football_data_co_uk(monkeypatch, tmp_path):
     original_makedirs = os.makedirs
     
     def mock_makedirs(name, exist_ok=False):
-        if "data/historical" in name.replace("\\", "/"):
+        if "data/historical" in str(name).replace("\\", "/"):
             original_makedirs(str(tmp_path), exist_ok=True)
         else:
             original_makedirs(name, exist_ok=exist_ok)
             
     monkeypatch.setattr("os.makedirs", mock_makedirs)
     original_join = os.path.join
-    monkeypatch.setattr("os.path.join", lambda a, b: original_join(str(tmp_path), b) if "data" in a else original_join(a,b))
+    def safe_join(*args):
+        if args and str(args[0]) in ("data", "data/historical"):
+            return original_join(str(tmp_path), *args[1:])
+        return original_join(*args)
+    monkeypatch.setattr("os.path.join", safe_join)
 
-    # Mock the LLM call inside normalizer so tests don't hang trying to reach Ollama
-    monkeypatch.setattr("src.ingestion.normalizer.TeamNormalizer._ask_llm", lambda self, name: "Nottingham Forest" if "nott" in name.lower() else None)
+    from src.rag.config import init_llama_index
+    init_llama_index()
 
     df = download_football_data_co_uk(seasons=["2324"])
     assert not df.empty
