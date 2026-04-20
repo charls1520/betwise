@@ -99,12 +99,18 @@ BetWise es un asistente web de apuestas deportivas enfocado en la Premier League
 - [x] Agregar nuevo scraper para `clubelo.com` y entrenar con nuevas métricas
 - [x] Configurar job semanal de retraining de Machine Learning
 
-### 15. Entrenamiento con xG y Elo Históricos (Pendiente)
+### 15. Entrenamiento con xG y Elo Históricos (Completo)
 - [x] Brainstorming y Diseño de Ingesta Histórica (Completo)
-- [ ] Desarrollar Scraper histórico para Clubelo
-- [ ] Desarrollar Scraper histórico (Scrapling) para Understat
-- [ ] Unir (Merge) datos de football-data.co.uk con Clubelo y Understat
-- [ ] Entrenar modelo usando features `xg_diff` y `elo_diff`
+- [x] Desarrollar Scraper histórico para Clubelo
+- [x] Desarrollar Scraper histórico (Scrapling) para Understat
+- [x] Unir (Merge) datos de football-data.co.uk con Clubelo y Understat
+- [x] Entrenar modelo usando features `xg_diff` y `elo_diff`
+
+### 16. Sistema de Caché Persistente para Ingesta Histórica (Pendiente)
+- [x] Brainstorming y Diseño de Sistema de Caché (Completo)
+- [ ] Implementar mecanismo de caché local
+- [ ] Evitar consultas reduntantes a APIs
+- [ ] Validación estricta anti-vacíos (Cero Vacíos)
 
 ---
 
