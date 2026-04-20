@@ -37,6 +37,9 @@ def test_download_football_data_co_uk(monkeypatch, tmp_path):
     original_join = os.path.join
     monkeypatch.setattr("os.path.join", lambda a, b: original_join(str(tmp_path), b) if "data" in a else original_join(a,b))
 
+    # Mock the LLM call inside normalizer so tests don't hang trying to reach Ollama
+    monkeypatch.setattr("src.ingestion.normalizer.TeamNormalizer._ask_llm", lambda self, name: "Nottingham Forest" if "nott" in name.lower() else None)
+
     df = download_football_data_co_uk(seasons=["2324"])
     assert not df.empty
     assert "HomeTeam" in df.columns
