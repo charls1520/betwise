@@ -1,9 +1,10 @@
 import pytest
+import os
 import pandas as pd
 from src.ingestion.historical import download_football_data_co_uk
 
 
-def test_download_football_data_co_uk(monkeypatch):
+def test_download_football_data_co_uk(monkeypatch, tmp_path):
     class MockResponse:
         status_code = 200
 
@@ -22,6 +23,19 @@ def test_download_football_data_co_uk(monkeypatch):
                                                    {"Team": "Nottingham Forest", "Date": pd.to_datetime("2023-08-12"), "xG": 1.0, "xGA": 2.0}]))
     monkeypatch.setattr("src.ingestion.historical.fetch_clubelo_history", 
                         lambda club: pd.DataFrame([{"From": pd.to_datetime("2023-08-01"), "To": pd.to_datetime("2023-08-31"), "Elo": 1800}]))
+
+    # Override the hardcoded cache dir with pytest's tmp_path using a monkeypatch wrapper
+    original_makedirs = os.makedirs
+    
+    def mock_makedirs(name, exist_ok=False):
+        if "data/historical" in name.replace("\\", "/"):
+            original_makedirs(str(tmp_path), exist_ok=True)
+        else:
+            original_makedirs(name, exist_ok=exist_ok)
+            
+    monkeypatch.setattr("os.makedirs", mock_makedirs)
+    original_join = os.path.join
+    monkeypatch.setattr("os.path.join", lambda a, b: original_join(str(tmp_path), b) if "data" in a else original_join(a,b))
 
     df = download_football_data_co_uk(seasons=["2324"])
     assert not df.empty
