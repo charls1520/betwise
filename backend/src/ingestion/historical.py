@@ -1,3 +1,4 @@
+import os
 import pandas as pd
 import requests
 import io
@@ -15,13 +16,29 @@ def get_elo_for_date(df_elo: pd.DataFrame, target_date: pd.Timestamp) -> float:
 
 def download_football_data_co_uk(seasons: list = ["2324", "2223", "2122"]) -> pd.DataFrame:
     base_url = "https://www.football-data.co.uk/mmz4281/{}/E0.csv"
-    dfs = []
+    cache_dir = "data/historical"
+    cache_file = os.path.join(cache_dir, "merged_history_cache.csv")
     
-    # Map football-data seasons to understat years (e.g. "2324" -> "2023")
+    os.makedirs(cache_dir, exist_ok=True)
+    
+    # 1. Load Cache
+    cached_df = pd.DataFrame()
+    if os.path.exists(cache_file):
+        try:
+            cached_df = pd.read_csv(cache_file)
+            cached_df["Date"] = pd.to_datetime(cached_df["Date"])
+        except Exception as e:
+            print(f"Failed to read cache: {e}")
+            cached_df = pd.DataFrame()
+
+    dfs_to_append = []
+    
     season_to_year = {
         "2324": "2023",
         "2223": "2022",
-        "2122": "2021"
+        "2122": "2021",
+        "2021": "2020",
+        "1920": "2019"
     }
 
     for season in seasons:
@@ -30,8 +47,22 @@ def download_football_data_co_uk(seasons: list = ["2324", "2223", "2122"]) -> pd
             response = requests.get(url, timeout=10)
             response.raise_for_status()
             df = pd.read_csv(io.StringIO(response.text))
-            
             df["Date"] = pd.to_datetime(df["Date"], format="%d/%m/%Y", errors="coerce")
+            df = df.dropna(subset=['Date', 'HomeTeam', 'AwayTeam'])
+            
+            # Find what we are missing
+            if not cached_df.empty:
+                # Merge indicator to find left_only
+                merged = df.merge(cached_df[['Date', 'HomeTeam', 'AwayTeam']], on=['Date', 'HomeTeam', 'AwayTeam'], how='left', indicator=True)
+                missing_df = df[merged['_merge'] == 'left_only'].copy()
+            else:
+                missing_df = df.copy()
+                
+            if missing_df.empty:
+                print(f"Season {season} is already fully cached. Skipping.")
+                continue
+                
+            print(f"Processing {len(missing_df)} new matches for season {season}...")
             
             # Fetch Understat
             year = season_to_year.get(season)
@@ -40,7 +71,7 @@ def download_football_data_co_uk(seasons: list = ["2324", "2223", "2122"]) -> pd
             normalizer = TeamNormalizer(df_understat['Team'].unique().tolist() if not df_understat.empty else [])
             
             # Prepare Elo cache
-            teams = pd.concat([df['HomeTeam'], df['AwayTeam']]).unique().tolist()
+            teams = pd.concat([missing_df['HomeTeam'], missing_df['AwayTeam']]).unique().tolist()
             elo_cache = {}
             for t in teams:
                 norm_t = normalizer.normalize(t)
@@ -48,9 +79,9 @@ def download_football_data_co_uk(seasons: list = ["2324", "2223", "2122"]) -> pd
                     clubelo_name = norm_t.replace(" ", "")
                     elo_cache[t] = fetch_clubelo_history(clubelo_name)
             
-            # Iterate and enrich
+            # Iterate and enrich missing matches
             enhanced_rows = []
-            for _, row in df.iterrows():
+            for _, row in missing_df.iterrows():
                 home = row['HomeTeam']
                 away = row['AwayTeam']
                 date = row['Date']
@@ -58,7 +89,6 @@ def download_football_data_co_uk(seasons: list = ["2324", "2223", "2122"]) -> pd
                 norm_home = normalizer.normalize(home)
                 norm_away = normalizer.normalize(away)
                 
-                # Default values
                 h_xg, a_xg, h_elo, a_elo = None, None, None, None
                 
                 if not df_understat.empty and norm_home and norm_away:
@@ -79,13 +109,22 @@ def download_football_data_co_uk(seasons: list = ["2324", "2223", "2122"]) -> pd
                 row_dict['Away_Elo'] = a_elo
                 enhanced_rows.append(row_dict)
                 
-            dfs.append(pd.DataFrame(enhanced_rows))
+            season_enhanced_df = pd.DataFrame(enhanced_rows)
+            # Strict Anti-Void Filter (Drop Any row with None/NaN in features)
+            valid_season_df = season_enhanced_df.dropna(subset=['Home_xG', 'Away_xG', 'Home_Elo', 'Away_Elo'])
+            
+            print(f"Successfully merged {len(valid_season_df)} out of {len(missing_df)} matches (Dropped {len(missing_df) - len(valid_season_df)} invalid matches).")
+            if not valid_season_df.empty:
+                dfs_to_append.append(valid_season_df)
+                
         except Exception as e:
-            print(f"Failed to download season {season}: {e}")
+            print(f"Failed to download or process season {season}: {e}")
 
-    if dfs:
-        final_df = pd.concat(dfs, ignore_index=True)
-        print("Final DF Before Dropna:")
-        print(final_df[['HomeTeam', 'AwayTeam', 'Date', 'Home_xG', 'Away_xG', 'Home_Elo', 'Away_Elo']])
-        return final_df.dropna(subset=['Home_xG', 'Away_xG', 'Home_Elo', 'Away_Elo'])
-    return pd.DataFrame()
+    # Append to cache
+    if dfs_to_append:
+        new_data_df = pd.concat(dfs_to_append, ignore_index=True)
+        final_df = pd.concat([cached_df, new_data_df], ignore_index=True)
+        final_df.to_csv(cache_file, index=False)
+        return final_df
+    
+    return cached_df
