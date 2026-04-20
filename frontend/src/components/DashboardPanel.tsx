@@ -32,7 +32,8 @@ export default function DashboardPanel() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetch('http://localhost:8000/api/dashboard')
+    const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:8080';
+    fetch(`${apiUrl}/api/dashboard`)
       .then(res => res.json())
       .then(fetchedData => {
         // Handle case where error is returned as list of dicts from old format
@@ -49,9 +50,9 @@ export default function DashboardPanel() {
       });
   }, []);
 
-  if (loading) return <main className="flex-grow xl:ml-64 lg:mr-80 overflow-y-auto px-6 py-8 text-[#6bff8f]">Loading analytics...</main>;
+  if (loading) return <main className="flex-grow xl:ml-64 lg:mr-80 overflow-y-auto px-6 py-8 text-[#6bff8f]">Cargando analíticas...</main>;
   if (data?.error) return <div className="text-red-500 p-8">Error: {data.error}</div>;
-  if (!data) return <div className="text-white p-8">No data available</div>;
+  if (!data) return <div className="text-white p-8">No hay datos disponibles</div>;
 
   const matches = data.matches || [];
   const suggestions = data.suggestions || [];
@@ -67,17 +68,17 @@ export default function DashboardPanel() {
             <div className="relative z-10">
               <div className="flex items-center gap-2 mb-4">
                 <span className="flex h-2 w-2 rounded-full bg-[#47c4ff] animate-pulse"></span>
-                <span className="text-[#47c4ff] text-xs font-bold tracking-widest uppercase">Live: Featured Match</span>
+                <span className="text-[#47c4ff] text-xs font-bold tracking-widest uppercase">En Vivo: Partido Destacado</span>
               </div>
               <h2 className="text-4xl md:text-5xl font-['Space_Grotesk'] font-bold text-white mb-2 leading-tight uppercase">{matches[0].home_team} <span className="text-[#6bff8f]">vs</span> {matches[0].away_team}</h2>
-              <p className="text-[#9eabc8] max-w-md mb-6">AI Prediction: Real-time ML calculation based on historical xG data.</p>
+              <p className="text-[#9eabc8] max-w-md mb-6">Predicción de IA: Cálculo ML en tiempo real basado en datos históricos de xG.</p>
               <div className="flex gap-4">
                 <div className="bg-[#152c4e] px-6 py-3 rounded-lg border border-[#3b4861]/10">
-                  <p className="text-[10px] text-[#9eabc8] font-bold">1 (HOME) PROB</p>
+                  <p className="text-[10px] text-[#9eabc8] font-bold">1 (LOCAL) PROB</p>
                   <p className="text-2xl font-['Space_Grotesk'] font-bold text-[#6bff8f]">{(matches[0].prob_home_win * 100).toFixed(1)}%</p>
                 </div>
                 <div className="bg-[#152c4e] px-6 py-3 rounded-lg border border-[#3b4861]/10">
-                  <p className="text-[10px] text-[#9eabc8] font-bold">EDGE</p>
+                  <p className="text-[10px] text-[#9eabc8] font-bold">EDGE (MARGEN)</p>
                   <p className="text-2xl font-['Space_Grotesk'] font-bold text-white">{(matches[0].home_edge * 100).toFixed(1)}%</p>
                 </div>
               </div>
@@ -85,9 +86,9 @@ export default function DashboardPanel() {
           </div>
           <div className="bg-[#0b203d] rounded-xl p-6 flex flex-col justify-between border-l-4 border-[#47c4ff]">
             <div>
-              <h3 className="text-xs font-bold text-[#9eabc8] tracking-widest mb-4 uppercase">AI Accuracy Streak</h3>
+              <h3 className="text-xs font-bold text-[#9eabc8] tracking-widest mb-4 uppercase">Racha de Precisión IA</h3>
               <div className="text-6xl font-['Space_Grotesk'] font-black text-white mb-2 tracking-tighter">92%</div>
-              <p className="text-sm text-[#9eabc8]">Your current AI-guided prediction accuracy is elite. Unlock high-stake vaults.</p>
+              <p className="text-sm text-[#9eabc8]">Tu precisión actual guiada por IA es élite. Desbloquea apuestas de alto valor.</p>
             </div>
             <div className="w-full h-2 bg-[#010e24] rounded-full overflow-hidden">
               <div className="h-full bg-[#47c4ff] w-[92%]"></div>
@@ -100,31 +101,33 @@ export default function DashboardPanel() {
       <section className="mb-12">
         <div className="flex items-center gap-2 mb-6">
           <span className="material-symbols-outlined text-[#6bff8f]">psychology</span>
-          <h2 className="text-2xl font-['Space_Grotesk'] font-bold uppercase tracking-tight text-white">Verified Value Bets</h2>
+          <h2 className="text-2xl font-['Space_Grotesk'] font-bold uppercase tracking-tight text-white">Apuestas de Valor Verificadas</h2>
         </div>
         
         {suggestions.length === 0 ? (
             <div className="bg-[#0b203d] p-6 rounded-xl border border-[#3b4861] text-center">
-                <p className="text-[#9eabc8] text-sm">No high-value bets passing the strict 10% edge filter found today. Protect your bankroll.</p>
+                <p className="text-[#9eabc8] text-sm">No se encontraron apuestas de alto valor que superen el filtro estricto del 10% hoy. Protege tu saldo.</p>
             </div>
         ) : (
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             {suggestions.map((sug, i) => (
                 <div key={i} className="bg-gradient-to-br from-[#0b203d] to-[#010e24] p-5 rounded-xl border border-[#6bff8f]/10 relative">
-                <div className="absolute top-4 right-4 bg-[#6bff8f]/20 text-[#6bff8f] text-[10px] font-bold px-2 py-1 rounded">{sug.confidence} CONFIDENCE</div>
+                <div className="absolute top-4 right-4 bg-[#6bff8f]/20 text-[#6bff8f] text-[10px] font-bold px-2 py-1 rounded">{sug.confidence} CONFIANZA</div>
                 <p className="text-[10px] text-[#9eabc8] font-bold mb-1 uppercase">{sug.match}</p>
                 <h4 className="text-white font-bold mb-3">{sug.market}</h4>
-                <p className="text-xs text-[#9eabc8] mb-4">{sug.reasoning} (Edge: {sug.edge})</p>
-                <button className="w-full bg-[#152c4e] py-2 rounded text-[#6bff8f] text-xs font-bold border border-[#6bff8f]/20 hover:bg-[#6bff8f] hover:text-[#002c0f] transition-all">ADD TO SLIP @ {sug.odds}</button>
+                <p className="text-xs text-[#9eabc8] mb-4">{sug.reasoning} (Margen: {sug.edge})</p>
+                <button className="w-full bg-[#152c4e] py-2 rounded text-[#6bff8f] text-xs font-bold border border-[#6bff8f]/20 hover:bg-[#6bff8f] hover:text-[#002c0f] transition-all">AÑADIR AL TICKET @ {sug.odds}</button>
                 </div>
             ))}
             </div>
         )}
       </section>
+
+      {/* Featured Predictions Grid */}
       <div className="mb-12">
         <div className="flex justify-between items-end mb-6">
-          <h2 className="text-2xl font-['Space_Grotesk'] font-bold uppercase tracking-tight text-white">Main Soccer Markets</h2>
-          <a className="text-[#6bff8f] text-xs font-bold uppercase tracking-widest hover:underline" href="#">All Fixtures</a>
+          <h2 className="text-2xl font-['Space_Grotesk'] font-bold uppercase tracking-tight text-white">Mercados Principales</h2>
+          <a className="text-[#6bff8f] text-xs font-bold uppercase tracking-widest hover:underline" href="#">Todos los Partidos</a>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {matches.map((match) => (
@@ -142,7 +145,7 @@ export default function DashboardPanel() {
                 </div>
                 <div className="grid grid-cols-2 gap-6">
                   <div className="space-y-3">
-                    <p className="text-[10px] font-black text-[#9eabc8] uppercase">1X2 Full Time AI Probs</p>
+                    <p className="text-[10px] font-black text-[#9eabc8] uppercase">Probabilidades IA 1X2 Final</p>
                     <div className="flex gap-2">
                       <button className="flex-1 bg-[#010e24] p-2 rounded text-center hover:bg-[#152c4e] transition-colors">
                         <span className="block text-[8px] text-[#9eabc8]">1</span>
@@ -159,14 +162,14 @@ export default function DashboardPanel() {
                     </div>
                   </div>
                   <div className="space-y-3">
-                    <p className="text-[10px] font-black text-[#9eabc8] uppercase">Total Goals</p>
+                    <p className="text-[10px] font-black text-[#9eabc8] uppercase">Goles Totales</p>
                     <div className="flex gap-2">
                       <button className="flex-1 bg-[#010e24] p-2 rounded text-center hover:bg-[#152c4e] transition-colors">
-                        <span className="block text-[8px] text-[#9eabc8]">O 2.5</span>
+                        <span className="block text-[8px] text-[#9eabc8]">MÁS 2.5</span>
                         <span className="font-['Space_Grotesk'] font-bold text-xs text-white">{(match.prob_home_win * 1.5 * 100).toFixed(1)}%</span>
                       </button>
                       <button className="flex-1 bg-[#010e24] p-2 rounded text-center hover:bg-[#152c4e] transition-colors">
-                        <span className="block text-[8px] text-[#9eabc8]">U 2.5</span>
+                        <span className="block text-[8px] text-[#9eabc8]">MENOS 2.5</span>
                         <span className="font-['Space_Grotesk'] font-bold text-xs text-[#6bff8f]">{(match.prob_away_win * 100).toFixed(1)}%</span>
                       </button>
                     </div>
@@ -175,7 +178,7 @@ export default function DashboardPanel() {
               </div>
             )
           ))}
-          {matches.length === 0 && <p className="text-[#9eabc8]">No upcoming matches found.</p>}
+          {matches.length === 0 && <p className="text-[#9eabc8]">No se encontraron próximos partidos.</p>}
         </div>
       </div>
     </main>
