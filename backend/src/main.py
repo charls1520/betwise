@@ -3,6 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from typing import List, Optional
 from src.ml.inference import predict_matches
+from src.ml.reliability import calculate_value_edge, meets_data_threshold
 from src.ingestion.scrapers.odds_api import fetch_premier_league_odds
 from src.ingestion.scrapers.understat import fetch_current_xg_stats
 from src.ingestion.normalizer import TeamNormalizer
@@ -37,17 +38,27 @@ def load_real_documents():
     # Find latest news files
     raw_dir = "data/raw"
     if os.path.exists(raw_dir):
-        # Look for news json files in subdirectories
+        # Look for news json files
         news_files = glob.glob(f"{raw_dir}/**/news_*.json", recursive=True)
         for fpath in news_files:
             with open(fpath, "r", encoding="utf-8") as f:
                 try:
                     data = json.load(f)
                     for article in data.get("articles", []):
-                        text = f"Title: {article.get('title')}\nSummary: {article.get('summary')}"
-                        docs.append(
-                            Document(text=text, metadata={"source": "bbc_news"})
-                        )
+                        text = f"News Title: {article.get('title')}\nSummary: {article.get('summary')}"
+                        docs.append(Document(text=text, metadata={"source": "bbc_news"}))
+                except Exception:
+                    pass
+        
+        # Look for odds json files
+        odds_files = glob.glob(f"{raw_dir}/**/odds_*.json", recursive=True)
+        for fpath in odds_files:
+            with open(fpath, "r", encoding="utf-8") as f:
+                try:
+                    data = json.load(f)
+                    for match in data.get("matches", []):
+                        text = f"Match: {match.get('home_team')} vs {match.get('away_team')}"
+                        docs.append(Document(text=text, metadata={"source": "odds"}))
                 except Exception:
                     pass
 
@@ -91,22 +102,124 @@ class ChatResponse(BaseModel):
     sources: List[SourceModel] = []
 
 
+def get_latest_ml_suggestions() -> list:
+    """Evaluates the latest cached odds using the ML model to find value edges."""
+    try:
+        raw_dir = "data/raw"
+        if not os.path.exists(raw_dir):
+            return []
+            
+        odds_files = glob.glob(f"{raw_dir}/**/odds_*.json", recursive=True)
+        if not odds_files:
+            return []
+            
+        latest_file = sorted(odds_files, key=os.path.getmtime)[-1]
+        with open(latest_file, "r", encoding="utf-8") as f:
+            data = json.load(f)
+            raw_odds = data.get("matches", [])
+            
+        if not raw_odds:
+            return []
+
+        xg_stats = fetch_current_xg_stats()
+        canonical_teams = list(xg_stats.keys()) if xg_stats else []
+        normalizer = TeamNormalizer(canonical_teams)
+
+        valid_odds = []
+        for match in raw_odds:
+            home_norm = normalizer.normalize(match.get("home_team", ""))
+            away_norm = normalizer.normalize(match.get("away_team", ""))
+
+            if home_norm and home_norm in xg_stats and away_norm and away_norm in xg_stats:
+                match["home_xg"] = xg_stats[home_norm].get("xg_for_avg")
+                match["away_xg"] = xg_stats[away_norm].get("xg_for_avg")
+                valid_odds.append(match)
+
+        if not valid_odds:
+            return []
+
+        predictions = predict_matches(valid_odds, model_dir="models")
+        
+        suggestions = []
+        for idx, match in enumerate(valid_odds):
+            pred = predictions[idx] if idx < len(predictions) else {}
+            home_prob = pred.get("prob_home_win", 0.0)
+            
+            home_odds = 2.0
+            bookmakers = match.get("bookmakers", [])
+            if bookmakers and len(bookmakers) > 0:
+                markets = bookmakers[0].get("markets", [])
+                if markets and len(markets) > 0:
+                    outcomes = markets[0].get("outcomes", [])
+                    for outcome in outcomes:
+                        if outcome.get("name") == match.get("home_team"):
+                            home_odds = outcome.get("price", 2.0)
+                            break
+
+            edge = calculate_value_edge(home_prob, home_odds)
+            suggestions.append({
+                "match": f"{match.get('home_team')} vs {match.get('away_team')}",
+                "prob_home": f"{home_prob * 100:.0f}%",
+                "odds": home_odds,
+                "edge": f"{edge * 100:.1f}%"
+            })
+            
+        return suggestions
+    except Exception as e:
+        print(f"Error in ML suggestions: {e}")
+        return []
+
+import re
+
 @app.post("/api/chat", response_model=ChatResponse)
 def chat_with_bot(request: ChatRequest):
     if not global_index:
         return ChatResponse(response="RAG Index not initialized.", sources=[])
 
     try:
-        # Call real RAG pipeline
         import src.rag.pipeline as pipeline
+        
+        # 1. Normalize User Input
+        xg_stats = fetch_current_xg_stats()
+        canonical_teams = list(xg_stats.keys()) if xg_stats else []
+        normalizer = TeamNormalizer(canonical_teams)
+        
+        user_msg = request.message
+        normalized_context = "Ningún alias detectado."
+        
+        # Simple heuristic: Look for capitalized words as potential teams
+        potential_teams = re.findall(r'\b[A-Z][a-z]+(?:\s+[A-Z][a-z]+)*\b', user_msg)
+        for pt in potential_teams:
+            if len(pt) > 3:
+                norm = normalizer.normalize(pt)
+                if norm and norm != pt:
+                    normalized_context = f"El usuario mencionó '{pt}', refiriéndose a '{norm}'."
 
-        answer = pipeline.query_index(global_index, request.message)
+        # 2. Get ML Suggestions
+        suggestions = get_latest_ml_suggestions()
+        ml_text = "Sin datos de predicción disponibles hoy."
+        if suggestions:
+            ml_text = "Predicciones Matemáticas (Value Edge):\n"
+            for s in suggestions:
+                ml_text += f"- {s['match']}: Prob. Local {s['prob_home']}, Cuota {s['odds']}, Edge: {s['edge']}\n"
+
+        # 3. Build Super Prompt
+        prompt = f"""Actúas como un experto asesor de apuestas de la Premier League.
+Tienes la siguiente información matemática proveniente de nuestro modelo de Machine Learning:
+{ml_text}
+
+[Contexto Auto-Ajustado del usuario]: {normalized_context}
+
+Pregunta del usuario: {request.message}
+
+Usa el contexto matemático anterior y las noticias de tu base de datos para dar recomendaciones sólidas, explicando SIEMPRE el "Value Edge" o la probabilidad matemática. No inventes partidos ni cuotas.
+"""
+        answer = pipeline.query_index(global_index, prompt)
+        
         return ChatResponse(
             response=str(answer),
             sources=[
-                SourceModel(
-                    type="news", title="RAG Context", snippet="Queried local DB"
-                )
+                SourceModel(type="news", title="RAG Context", snippet="Queried local DB and ML Engine")
             ],
         )
     except Exception as e:
@@ -204,9 +317,16 @@ import time
 @app.get("/api/health/audit")
 def get_audit_log():
     # 1. RAG Engine Status
+    doc_count = 0
+    try:
+        if global_index and hasattr(global_index.vector_store, 'client'):
+            doc_count = global_index.vector_store.client.get_collection("betwise_news").count()
+    except Exception:
+        pass
+
     rag_status = {
         "status": "Healthy" if global_index else "Offline",
-        "total_documents": len(global_index.docstore.docs) if global_index else 0,
+        "total_documents": doc_count,
         "last_news_indexed": "Latest from Data Lake" if global_index else "None",
     }
 
@@ -217,7 +337,7 @@ def get_audit_log():
         "model_last_trained": time.ctime(os.path.getmtime(model_path))
         if os.path.exists(model_path)
         else "Never",
-        "sources_used": ["football-data.co.uk (E0.csv)"],
+        "sources_used": ["football-data.co.uk", "Understat xG", "Clubelo"],
     }
 
     # 3. Ingestion Engine Status
