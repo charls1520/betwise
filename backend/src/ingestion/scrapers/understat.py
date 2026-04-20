@@ -8,8 +8,8 @@ from tenacity import retry, stop_after_attempt, wait_fixed
 # Patch asyncio to allow nested event loops (useful for FastAPI/Jupyter)
 nest_asyncio.apply()
 
-async def _fetch_understat_async() -> dict:
-    url = "https://understat.com/league/EPL"
+async def _fetch_understat_async(league_id: str) -> dict:
+    url = f"https://understat.com/league/{league_id}"
 
     async with async_playwright() as p:
         # Launch headless browser
@@ -65,14 +65,14 @@ async def _fetch_understat_async() -> dict:
             return stats
 
         except Exception as e:
-            print(f"Playwright Scraper Error: {e}")
+            print(f"Playwright Scraper Error for {league_id}: {e}")
             raise e
         finally:
             await browser.close()
 
 
 @retry(stop=stop_after_attempt(3), wait=wait_fixed(2))
-def fetch_current_xg_stats() -> dict:
+def fetch_current_xg_stats(league_id: str = "EPL") -> dict:
     """Synchronous wrapper for the async Playwright scraper."""
     # Create a new event loop for this thread if necessary, or run in the current one
     try:
@@ -80,4 +80,4 @@ def fetch_current_xg_stats() -> dict:
     except RuntimeError:
         loop = asyncio.new_event_loop()
         asyncio.set_event_loop(loop)
-    return loop.run_until_complete(_fetch_understat_async())
+    return loop.run_until_complete(_fetch_understat_async(league_id))
