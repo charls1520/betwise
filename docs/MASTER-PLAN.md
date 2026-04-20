@@ -138,6 +138,13 @@ BetWise es un asistente web de apuestas deportivas enfocado en la Premier League
 - [x] Instalar soporte para OpenAI en LlamaIndex (`llama-index-llms-openai`)
 - [x] Actualizar y ejecutar tests de configuración de RAG
 
+### 21. Expansión Multi-Liga (Top 5 Europeas) (Pendiente)
+- [x] Brainstorming y Diseño de Expansión Multi-Liga (Completo)
+- [ ] Configurar diccionario de IDs (`config.py`) para EPL, La Liga, Serie A, Bundesliga, Ligue 1
+- [ ] Parametrizar scraper de The-Odds-API y Understat
+- [ ] Refactorizar el cron de ingesta (`tasks.py`) para iterar sobre ligas
+- [ ] Refactorizar Ingesta Histórica y ML para entrenar multi-liga
+
 ---
 
 ## Próximos pasos
