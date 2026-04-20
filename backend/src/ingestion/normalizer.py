@@ -23,7 +23,10 @@ class TeamNormalizer:
             "brighton and hove albion": "Brighton",
             "brighton & hove albion": "Brighton",
             "leeds united": "Leeds",
-            "tottenham hotspur": "Tottenham"
+            "tottenham hotspur": "Tottenham",
+            "newcastle": "Newcastle United",
+            "man united": "Manchester United",
+            "wolves": "Wolverhampton Wanderers"
         }
 
     def normalize(self, raw_name: str) -> Optional[str]:

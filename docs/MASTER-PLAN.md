@@ -106,11 +106,11 @@ BetWise es un asistente web de apuestas deportivas enfocado en la Premier League
 - [x] Unir (Merge) datos de football-data.co.uk con Clubelo y Understat
 - [x] Entrenar modelo usando features `xg_diff` y `elo_diff`
 
-### 16. Sistema de Caché Persistente para Ingesta Histórica (Pendiente)
+### 16. Sistema de Caché Persistente para Ingesta Histórica (Completo)
 - [x] Brainstorming y Diseño de Sistema de Caché (Completo)
-- [ ] Implementar mecanismo de caché local
-- [ ] Evitar consultas reduntantes a APIs
-- [ ] Validación estricta anti-vacíos (Cero Vacíos)
+- [x] Implementar mecanismo de caché local
+- [x] Evitar consultas reduntantes a APIs
+- [x] Validación estricta anti-vacíos (Cero Vacíos)
 
 ---
 
