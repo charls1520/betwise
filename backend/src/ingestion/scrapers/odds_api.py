@@ -5,13 +5,12 @@ from tenacity import retry, stop_after_attempt, wait_exponential
 
 
 @retry(stop=stop_after_attempt(3), wait=wait_exponential(multiplier=1, min=2, max=10))
-def fetch_premier_league_odds(api_key: str = "DEMO_KEY") -> list:
-    """Fetches upcoming Premier League odds, strictly filtered to the next 48 hours in UTC-5."""
-    # We use soccer_epl for Premier League
-    url = "https://api.the-odds-api.com/v4/sports/soccer_epl/odds/"
+def fetch_premier_league_odds(api_key: str, sport_key: str = "soccer_epl") -> list:
+    """Fetches upcoming odds, strictly filtered to the next 48 hours in UTC-5."""
+    url = f"https://api.the-odds-api.com/v4/sports/{sport_key}/odds/"
     params = {
         "apiKey": api_key,
-        "regions": "uk",
+        "regions": "eu,uk",
         "markets": "h2h",
         "oddsFormat": "decimal",
     }
@@ -38,9 +37,11 @@ def fetch_premier_league_odds(api_key: str = "DEMO_KEY") -> list:
             commence_time_utc5 = commence_time_utc.astimezone(tz)
             
             if now_utc5 <= commence_time_utc5 <= limit_utc5:
+                match['sport_key'] = sport_key
                 filtered_matches.append(match)
         except ValueError:
             # If date format is weird, keep it just in case, but usually odds API is strict ISO
+            match['sport_key'] = sport_key
             filtered_matches.append(match)
             
     return filtered_matches
