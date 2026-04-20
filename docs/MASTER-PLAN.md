@@ -118,11 +118,18 @@ BetWise es un asistente web de apuestas deportivas enfocado en la Premier League
 - [x] Implementar zona horaria `America/Bogota` (UTC-5) para todas las validaciones
 - [x] Actualizar tests para reflejar el filtro de 48 horas
 
-### 18. Auto-Healing Team Normalizer via LLM (Pendiente)
+### 18. Auto-Healing Team Normalizer via LLM (Completo)
 - [x] Brainstorming y Diseño de Auto-Healing (Completo)
-- [ ] Reescribir `TeamNormalizer` para cargar/guardar alias desde `team_aliases.json`
-- [ ] Implementar integración con LLM (Ollama) para resolver nombres con bajo threshold
-- [ ] Actualizar tests unitarios con mocks de caché y llamadas LLM
+- [x] Reescribir `TeamNormalizer` para cargar/guardar alias desde `team_aliases.json`
+- [x] Implementar integración con LLM (Ollama) para resolver nombres con bajo threshold
+- [x] Actualizar tests unitarios con mocks de caché y llamadas LLM
+
+### 19. Intelligent Chat RAG con Integración de ML (Pendiente)
+- [x] Brainstorming y Diseño de Integración (Completo)
+- [ ] Refactorizar API para exponer cálculos de *Value Edge* en local
+- [ ] Inyectar resultados de ML y contexto matemático en Prompt de Chat
+- [ ] Aplicar Normalizador (Auto-Healing) sobre el input del usuario
+- [ ] Validar Chat E2E (Sin consumo de API externa)
 
 ---
 
