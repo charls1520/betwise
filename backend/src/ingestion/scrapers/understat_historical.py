@@ -4,8 +4,8 @@ import asyncio
 from playwright.async_api import async_playwright
 import pandas as pd
 
-async def _fetch_understat_season_async(year: str) -> dict:
-    url = f"https://understat.com/league/EPL/{year}"
+async def _fetch_understat_season_async(year: str, league_id: str) -> dict:
+    url = f"https://understat.com/league/{league_id}/{year}"
     
     async with async_playwright() as p:
         browser = await p.chromium.launch(headless=True)
@@ -42,14 +42,14 @@ async def _fetch_understat_season_async(year: str) -> dict:
         finally:
             await browser.close()
 
-def fetch_understat_historical_season(year: str) -> pd.DataFrame:
+def fetch_understat_historical_season(year: str, league_id: str = "EPL") -> pd.DataFrame:
     try:
         loop = asyncio.get_event_loop()
     except RuntimeError:
         loop = asyncio.new_event_loop()
         asyncio.set_event_loop(loop)
         
-    data = loop.run_until_complete(_fetch_understat_season_async(year))
+    data = loop.run_until_complete(_fetch_understat_season_async(year, league_id))
     if not data or "matches" not in data:
         return pd.DataFrame()
     
