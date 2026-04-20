@@ -15,6 +15,8 @@ def test_real_chat_endpoint(monkeypatch):
     monkeypatch.setattr(
         "src.rag.pipeline.query_index", lambda idx, q: "Mocked RAG response"
     )
+    # Mock LLM calls inside normalizer to avoid hanging during tests
+    monkeypatch.setattr("src.ingestion.normalizer.TeamNormalizer._ask_llm", lambda self, name: None)
 
     response = client.post(
         "/api/chat", json={"message": "Injury update?", "match_id": 1}
