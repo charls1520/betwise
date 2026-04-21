@@ -14,7 +14,7 @@ function App() {
       <header className="fixed top-0 w-full z-50 bg-[#102645]/80 backdrop-blur-xl shadow-2xl shadow-black/40">
         <div className="flex justify-between items-center px-6 h-16 w-full max-w-screen-2xl mx-auto">
           <div className="flex items-center gap-8">
-            <button onClick={() => setIsNavOpen(!isNavOpen)} className="p-2 text-[#9eabc8] hover:text-[#6bff8f] transition-colors xl:hidden">
+            <button onClick={() => setIsNavOpen(!isNavOpen)} className="p-2 text-[#9eabc8] hover:text-[#6bff8f] transition-colors">
               <span className="material-symbols-outlined">menu</span>
             </button>
             <span className="text-2xl font-bold tracking-tighter text-[#6bff8f] uppercase font-['Space_Grotesk']">THE KINETIC VAULT</span>
@@ -31,7 +31,7 @@ function App() {
               <input className="bg-transparent border-none focus:ring-0 text-sm p-0 w-48 text-[#dbe6ff] outline-none" placeholder="Buscar ligas..." type="text" />
             </div>
             <div className="flex items-center gap-3">
-              <button onClick={() => setIsChatOpen(!isChatOpen)} className="p-2 text-[#9eabc8] hover:text-[#6bff8f] transition-colors lg:hidden" title="Toggle Chat">
+              <button onClick={() => setIsChatOpen(!isChatOpen)} className="p-2 text-[#9eabc8] hover:text-[#6bff8f] transition-colors" title="Toggle Chat">
                 <span className="material-symbols-outlined">chat</span>
               </button>
               <button className="p-2 text-[#9eabc8] hover:text-[#6bff8f] transition-colors">
