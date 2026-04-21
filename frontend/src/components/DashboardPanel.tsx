@@ -29,6 +29,23 @@ interface DashboardPayload {
   error?: string;
 }
 
+const formatToUTC5 = (utcTimeString: string | undefined) => {
+  if (!utcTimeString || utcTimeString === "TBA") return "TBA";
+  try {
+    const date = new Date(utcTimeString);
+    return date.toLocaleString("es-CO", {
+      timeZone: "America/Bogota",
+      month: "short",
+      day: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+      hour12: true
+    });
+  } catch (e) {
+    return utcTimeString;
+  }
+};
+
 export default function DashboardPanel() {
   const [data, setData] = useState<DashboardPayload | null>(null);
   const [loading, setLoading] = useState(true);
@@ -138,12 +155,15 @@ export default function DashboardPanel() {
             ) : (
               <div key={match.id} className="bg-[#0b203d] rounded-xl p-6 relative overflow-hidden group border border-white/5">
                 <div className="flex items-center justify-between mb-6">
-                  <div className="flex items-center gap-3">
-                    <span className="font-bold text-sm text-white">{match.home_team.substring(0, 3).toUpperCase()}</span>
-                    <span className="text-[#9eabc8] text-xs font-bold">VS</span>
-                    <span className="font-bold text-sm text-white">{match.away_team.substring(0, 3).toUpperCase()}</span>
+                  <div className="flex flex-col">
+                    <div className="flex items-center gap-3">
+                      <span className="font-bold text-sm text-white">{match.home_team}</span>
+                      <span className="text-[#9eabc8] text-xs font-bold">VS</span>
+                      <span className="font-bold text-sm text-white">{match.away_team}</span>
+                    </div>
+                    <span className="text-[#9eabc8] text-[10px] mt-1">{formatToUTC5(match.match_time)}</span>
                   </div>
-                  <span className="text-[10px] font-bold text-[#6bff8f] bg-[#6bff8f]/10 px-2 py-1 rounded">PREMIER LEAGUE</span>
+                  <span className="text-[10px] font-bold text-[#6bff8f] bg-[#6bff8f]/10 px-2 py-1 rounded truncate max-w-[120px]" title={match.league || "PREMIER LEAGUE"}>{match.league || "PREMIER LEAGUE"}</span>
                 </div>
                 <div className="grid grid-cols-2 gap-6">
                   <div className="space-y-3">
