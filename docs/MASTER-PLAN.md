@@ -145,6 +145,13 @@ BetWise es un asistente web de apuestas deportivas enfocado en la Premier League
 - [x] Refactorizar el cron de ingesta (`tasks.py`) para iterar sobre ligas
 - [x] Refactorizar Ingesta Histórica y ML para entrenar multi-liga
 
+### 22. Rate Limits y Prevención Anti-Bot (Pendiente)
+- [x] Brainstorming y Diseño de Anti-Bloqueos (Completo)
+- [ ] Implementar pausas humanizadas y cabeceras en peticiones HTTP
+- [ ] Bloquear carga de recursos innecesarios en Playwright
+- [ ] Aislar errores para no romper el bucle masivo
+- [ ] Configurar reintentos exponenciales en endpoints problemáticos
+
 ---
 
 ## Próximos pasos
