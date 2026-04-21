@@ -9,6 +9,8 @@ interface MatchData {
   prob_away_win: number;
   home_odds: number;
   home_edge: number;
+  match_time?: string;
+  league?: string;
   error?: string;
 }
 
