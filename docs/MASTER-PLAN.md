@@ -159,6 +159,12 @@ BetWise es un asistente web de apuestas deportivas enfocado en la Premier League
 - [ ] Manejar `RetryError` en el bloque principal para evitar caídas
 - [ ] Asegurar que las pruebas pasen con la nueva arquitectura de reintentos
 
+### 24. Mejoras de UI: Datos Completos y Menús Colapsables (Pendiente)
+- [x] Brainstorming y Diseño de UI Completa y Menús
+- [ ] Actualizar endpoint `/api/dashboard` con data dinámica (hora y liga)
+- [ ] Actualizar interfaz en React y componentes de Partido para soportar nombres y UTC-5
+- [ ] Implementar menús laterales colapsables (`DashboardPanel` dinámico, `ChatPanel` colapsable)
+
 ---
 
 ## Próximos pasos
