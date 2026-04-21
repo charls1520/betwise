@@ -152,6 +152,13 @@ BetWise es un asistente web de apuestas deportivas enfocado en la Premier League
 - [x] Aislar errores para no romper el bucle masivo
 - [x] Configurar reintentos exponenciales en endpoints problemáticos
 
+### 23. Mitigación de Rate Limits del LLM (Pendiente)
+- [x] Brainstorming y Diseño de LLM Rate Limits (Completo)
+- [ ] Aplicar `tenacity` a la llamada de `Settings.llm` en el Normalizador
+- [ ] Configurar backoff exponencial para salvar respuestas 429
+- [ ] Manejar `RetryError` en el bloque principal para evitar caídas
+- [ ] Asegurar que las pruebas pasen con la nueva arquitectura de reintentos
+
 ---
 
 ## Próximos pasos
