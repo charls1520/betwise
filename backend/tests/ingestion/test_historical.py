@@ -5,17 +5,8 @@ from src.ingestion.historical import download_football_data_co_uk
 
 
 def test_download_football_data_co_uk(monkeypatch, tmp_path):
-    class MockResponse:
-        status_code = 200
-
-        @property
-        def text(self):
-            return "Div,Date,HomeTeam,AwayTeam,FTHG,FTAG,FTR\nE0,12/08/2023,Arsenal,Nott'm Forest,2,1,H\n"
-
-        def raise_for_status(self):
-            pass
-
-    monkeypatch.setattr("requests.get", lambda url, timeout=None: MockResponse())
+    # Mock the direct fetch_with_retry function instead of requests.get
+    monkeypatch.setattr("src.ingestion.historical.fetch_with_retry", lambda url: "Div,Date,HomeTeam,AwayTeam,FTHG,FTAG,FTR\nE0,12/08/2023,Arsenal,Nott'm Forest,2,1,H\n")
     
     # Mock the new dependent functions
     monkeypatch.setattr("src.ingestion.historical.fetch_understat_historical_season",
