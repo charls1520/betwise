@@ -3,17 +3,27 @@ import io
 import requests
 import datetime
 from typing import List
+from tenacity import retry, stop_after_attempt, wait_exponential
 from src.ingestion.validators import EloScore, validate_volume
 from src.ingestion.normalizer import TeamNormalizer
+
+@retry(stop=stop_after_attempt(3), wait=wait_exponential(multiplier=1, min=2, max=10))
+def _fetch_clubelo_with_retry(url: str) -> str:
+    headers = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36"}
+    response = requests.get(url, headers=headers, timeout=15)
+    response.raise_for_status()
+    return response.text
 
 def fetch_clubelo_stats() -> List[dict]:
     today = datetime.date.today().strftime('%Y-%m-%d')
     url = f"http://api.clubelo.com/{today}"
-    response = requests.get(url)
-    if response.status_code != 200:
-        return []
     
-    csv_data = response.text
+    try:
+        csv_data = _fetch_clubelo_with_retry(url)
+    except Exception as e:
+        print(f"Clubelo fetch error: {e}")
+        return []
+        
     reader = csv.DictReader(io.StringIO(csv_data))
     
     valid_scores = []
@@ -37,17 +47,16 @@ def fetch_clubelo_stats() -> List[dict]:
 def fetch_clubelo_history(club_name: str):
     """Fetches the entire Elo history for a specific club."""
     import pandas as pd
-    import requests
-    import io
     
     url = f"http://api.clubelo.com/{club_name}"
-    response = requests.get(url)
-    if response.status_code != 200:
-        return pd.DataFrame()
+    try:
+        csv_data = _fetch_clubelo_with_retry(url)
+        df = pd.read_csv(io.StringIO(csv_data))
+        if 'Elo' in df.columns and 'From' in df.columns and 'To' in df.columns:
+            df['From'] = pd.to_datetime(df['From'])
+            df['To'] = pd.to_datetime(df['To'])
+            return df
+    except Exception as e:
+        print(f"Clubelo history error for {club_name}: {e}")
         
-    df = pd.read_csv(io.StringIO(response.text))
-    if 'Elo' in df.columns and 'From' in df.columns and 'To' in df.columns:
-        df['From'] = pd.to_datetime(df['From'])
-        df['To'] = pd.to_datetime(df['To'])
-        return df
     return pd.DataFrame()
