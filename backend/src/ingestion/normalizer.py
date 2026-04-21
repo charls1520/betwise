@@ -3,6 +3,7 @@ import json
 from thefuzz import process
 from typing import List, Optional
 from llama_index.core import Settings
+from tenacity import retry, stop_after_attempt, wait_exponential, RetryError
 
 
 class TeamNormalizer:
@@ -26,6 +27,7 @@ class TeamNormalizer:
         with open(self.cache_file, "w", encoding="utf-8") as f:
             json.dump(self.aliases, f, indent=4)
 
+    @retry(stop=stop_after_attempt(5), wait=wait_exponential(multiplier=2, min=5, max=30))
     def _ask_llm(self, raw_name: str) -> Optional[str]:
         if not getattr(Settings, "llm", None):
             return None
@@ -37,18 +39,14 @@ class TeamNormalizer:
             f"If it is none of them, reply 'NONE'."
         )
         
-        try:
-            response = Settings.llm.complete(prompt)
-            answer = str(response).strip()
-            
-            # Verify the LLM didn't hallucinate a name not in the list
-            if answer in self.canonical_teams:
-                print(f"Auto-Healing learned that '{raw_name}' means '{answer}'")
-                return answer
-            return None
-        except Exception as e:
-            print(f"LLM Auto-Healing error for '{raw_name}': {e}")
-            return None
+        response = Settings.llm.complete(prompt)
+        answer = str(response).strip()
+        
+        # Verify the LLM didn't hallucinate a name not in the list
+        if answer in self.canonical_teams:
+            print(f"Auto-Healing learned that '{raw_name}' means '{answer}'")
+            return answer
+        return None
 
     def normalize(self, raw_name: str) -> Optional[str]:
         raw_lower = raw_name.lower().strip()
@@ -72,11 +70,16 @@ class TeamNormalizer:
         # 3. LLM Auto-Healing (Only if score > 50 to avoid total garbage)
         if score > 50:
             print(f"WARNING: Unmapped team '{raw_name}' (Score: {score}). Asking LLM...")
-            llm_match = self._ask_llm(raw_name)
-            if llm_match:
-                self.aliases[raw_lower] = llm_match
-                self._save_cache()
-                return llm_match
+            try:
+                llm_match = self._ask_llm(raw_name)
+                if llm_match:
+                    self.aliases[raw_lower] = llm_match
+                    self._save_cache()
+                    return llm_match
+            except RetryError as e:
+                print(f"LLM Auto-Healing failed after retries for '{raw_name}': {e}")
+            except Exception as e:
+                print(f"Unexpected LLM error for '{raw_name}': {e}")
 
         print(
             f"WARNING: Unmapped team name '{raw_name}' (Score: {score}). Discarding."
