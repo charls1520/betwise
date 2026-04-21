@@ -29,7 +29,8 @@ def test_real_chat_endpoint(monkeypatch):
     assert "Mocked RAG response" in response.json()["response"]
 
 
-def test_dashboard_endpoint():
+def test_dashboard_endpoint(monkeypatch):
+    monkeypatch.setattr("src.ingestion.normalizer.TeamNormalizer._ask_llm", lambda self, name: None)
     response = client.get("/api/dashboard")
     assert response.status_code == 200
     data = response.json()
