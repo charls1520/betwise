@@ -5,6 +5,8 @@ import AuditModal from './components/AuditModal';
 
 function App() {
   const [isAuditOpen, setIsAuditOpen] = useState(false);
+  const [isNavOpen, setIsNavOpen] = useState(false);
+  const [isChatOpen, setIsChatOpen] = useState(false);
 
   return (
     <div className="flex bg-[#010e24] h-screen overflow-hidden text-[#dbe6ff] font-['Manrope']">
@@ -12,6 +14,9 @@ function App() {
       <header className="fixed top-0 w-full z-50 bg-[#102645]/80 backdrop-blur-xl shadow-2xl shadow-black/40">
         <div className="flex justify-between items-center px-6 h-16 w-full max-w-screen-2xl mx-auto">
           <div className="flex items-center gap-8">
+            <button onClick={() => setIsNavOpen(!isNavOpen)} className="p-2 text-[#9eabc8] hover:text-[#6bff8f] transition-colors xl:hidden">
+              <span className="material-symbols-outlined">menu</span>
+            </button>
             <span className="text-2xl font-bold tracking-tighter text-[#6bff8f] uppercase font-['Space_Grotesk']">THE KINETIC VAULT</span>
             <nav className="hidden md:flex gap-6">
               <a className="text-[#6bff8f] border-b-2 border-[#6bff8f] pb-1 font-['Space_Grotesk'] tracking-tight" href="#">FÚTBOL</a>
@@ -26,6 +31,9 @@ function App() {
               <input className="bg-transparent border-none focus:ring-0 text-sm p-0 w-48 text-[#dbe6ff] outline-none" placeholder="Buscar ligas..." type="text" />
             </div>
             <div className="flex items-center gap-3">
+              <button onClick={() => setIsChatOpen(!isChatOpen)} className="p-2 text-[#9eabc8] hover:text-[#6bff8f] transition-colors lg:hidden" title="Toggle Chat">
+                <span className="material-symbols-outlined">chat</span>
+              </button>
               <button className="p-2 text-[#9eabc8] hover:text-[#6bff8f] transition-colors">
                 <span className="material-symbols-outlined">notifications</span>
               </button>
@@ -43,7 +51,7 @@ function App() {
       {/* App Layout Container */}
       <div className="flex pt-16 h-screen w-full">
         {/* Sidebar Left: Soccer Navigation */}
-        <aside className="fixed left-0 top-16 h-[calc(100vh-64px)] w-64 bg-[#02132b] flex-col py-6 overflow-y-auto hidden xl:flex">
+        <aside className={`fixed left-0 top-16 h-[calc(100vh-64px)] w-64 bg-[#02132b] flex-col py-6 overflow-y-auto transition-transform duration-300 z-40 flex ${isNavOpen ? 'translate-x-0' : '-translate-x-full'}`}>
           <div className="px-6 mb-8">
             <div className="flex items-center gap-2 mb-1">
               <span className="text-lg font-black text-[#6bff8f] font-['Space_Grotesk']">CENTRO DE FÚTBOL</span>
@@ -88,8 +96,8 @@ function App() {
         </aside>
 
         {/* Main Feed and Right Sidebar Container */}
-        <DashboardPanel />
-        <ChatPanel />
+        <DashboardPanel isNavOpen={isNavOpen} isChatOpen={isChatOpen} />
+        <ChatPanel isOpen={isChatOpen} />
       </div>
       <AuditModal isOpen={isAuditOpen} onClose={() => setIsAuditOpen(false)} />
     </div>

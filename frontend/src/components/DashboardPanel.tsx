@@ -46,7 +46,7 @@ const formatToUTC5 = (utcTimeString: string | undefined) => {
   }
 };
 
-export default function DashboardPanel() {
+export default function DashboardPanel({ isNavOpen, isChatOpen }: { isNavOpen?: boolean, isChatOpen?: boolean }) {
   const [data, setData] = useState<DashboardPayload | null>(null);
   const [loading, setLoading] = useState(true);
 
@@ -69,7 +69,7 @@ export default function DashboardPanel() {
       });
   }, []);
 
-  if (loading) return <main className="flex-grow xl:ml-64 lg:mr-80 overflow-y-auto px-6 py-8 text-[#6bff8f]">Cargando analíticas...</main>;
+  if (loading) return <main className={`flex-grow overflow-y-auto px-6 py-8 text-[#6bff8f] transition-all duration-300 ${isNavOpen ? 'ml-64' : 'ml-0'} ${isChatOpen ? 'mr-80' : 'mr-0'}`}>Cargando analíticas...</main>;
   if (data?.error) return <div className="text-red-500 p-8">Error: {data.error}</div>;
   if (!data) return <div className="text-white p-8">No hay datos disponibles</div>;
 
@@ -77,7 +77,7 @@ export default function DashboardPanel() {
   const suggestions = data.suggestions || [];
 
   return (
-    <main className="flex-grow xl:ml-64 overflow-y-auto px-6 py-8">
+    <main className={`flex-grow overflow-y-auto px-6 py-8 transition-all duration-300 ${isNavOpen ? 'ml-64' : 'ml-0'} ${isChatOpen ? 'mr-80' : 'mr-0'}`}>
       {matches.length > 0 && (
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
           <div className="md:col-span-2 relative group overflow-hidden rounded-xl bg-[#0b203d] p-8 min-h-[320px] flex flex-col justify-end">

@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import type { ChatMessage } from '../types';
 
-export default function ChatPanel() {
+export default function ChatPanel({ isOpen }: { isOpen?: boolean }) {
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
   const [messages, setMessages] = useState<ChatMessage[]>([
@@ -44,7 +44,7 @@ export default function ChatPanel() {
   };
 
   return (
-    <aside className="fixed right-0 top-16 h-[calc(100vh-64px)] w-80 bg-[#102645]/90 backdrop-blur-2xl border-l border-white/5 flex-col hidden lg:flex shadow-[-10px_0px_30px_rgba(0,0,0,0.5)]">
+    <aside className={`fixed right-0 top-16 h-[calc(100vh-64px)] w-80 bg-[#102645]/90 backdrop-blur-2xl border-l border-white/5 flex-col shadow-[-10px_0px_30px_rgba(0,0,0,0.5)] transition-transform duration-300 z-40 flex ${isOpen ? 'translate-x-0' : 'translate-x-full'}`}>
       {/* Header */}
       <div className="p-6 border-b border-white/5">
         <div className="flex items-center justify-between mb-1">
