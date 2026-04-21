@@ -121,7 +121,13 @@ def get_latest_ml_suggestions() -> list:
         if not raw_odds:
             return []
 
-        xg_stats = fetch_current_xg_stats()
+        xg_stats = {}
+        xg_files = glob.glob(f"{raw_dir}/**/xg_*.json", recursive=True)
+        if xg_files:
+            latest_xg = sorted(xg_files, key=os.path.getmtime)[-1]
+            with open(latest_xg, "r", encoding="utf-8") as f:
+                xg_stats = json.load(f)
+
         canonical_teams = list(xg_stats.keys()) if xg_stats else []
         normalizer = TeamNormalizer(canonical_teams)
 
@@ -180,7 +186,14 @@ def chat_with_bot(request: ChatRequest):
         import src.rag.pipeline as pipeline
         
         # 1. Normalize User Input
-        xg_stats = fetch_current_xg_stats()
+        raw_dir = "data/raw"
+        xg_stats = {}
+        xg_files = glob.glob(f"{raw_dir}/**/xg_*.json", recursive=True)
+        if xg_files:
+            latest_xg = sorted(xg_files, key=os.path.getmtime)[-1]
+            with open(latest_xg, "r", encoding="utf-8") as f:
+                xg_stats = json.load(f)
+
         canonical_teams = list(xg_stats.keys()) if xg_stats else []
         normalizer = TeamNormalizer(canonical_teams)
         
@@ -232,38 +245,50 @@ from src.ml.reliability import calculate_value_edge, meets_data_threshold
 @app.get("/api/dashboard")
 def get_dashboard_data():
     try:
-        # 1. Fetch live odds
-        api_key = os.getenv("ODDS_API_KEY", "DEMO_KEY")
-        raw_odds = fetch_premier_league_odds(api_key=api_key)
+        raw_dir = "data/raw"
+        if not os.path.exists(raw_dir):
+            return {"matches": [], "suggestions": []}
+            
+        odds_files = glob.glob(f"{raw_dir}/**/odds_*.json", recursive=True)
+        if not odds_files:
+            return {"matches": [], "suggestions": []}
+            
+        latest_file = sorted(odds_files, key=os.path.getmtime)[-1]
+        with open(latest_file, "r", encoding="utf-8") as f:
+            data = json.load(f)
+            raw_odds = data.get("matches", [])
 
-        # 2. Fetch real xG data
-        xg_stats = fetch_current_xg_stats()
+        if not raw_odds:
+            return {"matches": [], "suggestions": []}
 
-        # 3. Normalize and merge
-        # Normalizer
+        xg_stats = {}
+        xg_files = glob.glob(f"{raw_dir}/**/xg_*.json", recursive=True)
+        if xg_files:
+            latest_xg = sorted(xg_files, key=os.path.getmtime)[-1]
+            with open(latest_xg, "r", encoding="utf-8") as f:
+                xg_stats = json.load(f)
+
         canonical_teams = list(xg_stats.keys()) if xg_stats else []
         normalizer = TeamNormalizer(canonical_teams)
 
+        valid_odds = []
         for match in raw_odds:
             home_norm = normalizer.normalize(match.get("home_team", ""))
             away_norm = normalizer.normalize(match.get("away_team", ""))
 
-            # Apply real xG if found, else raise Exception (No mock data allowed)
-            if not home_norm or home_norm not in xg_stats:
-                raise ValueError(f"Real xG data not found for home team: {match.get('home_team')}")
-            if not away_norm or away_norm not in xg_stats:
-                raise ValueError(f"Real xG data not found for away team: {match.get('away_team')}")
-
-            match["home_xg"] = xg_stats[home_norm].get("xg_for_avg")
-            match["away_xg"] = xg_stats[away_norm].get("xg_for_avg")
+            # Instead of failing on exception, just skip matches we can't find data for
+            if home_norm and home_norm in xg_stats and away_norm and away_norm in xg_stats:
+                match["home_xg"] = xg_stats[home_norm].get("xg_for_avg")
+                match["away_xg"] = xg_stats[away_norm].get("xg_for_avg")
+                valid_odds.append(match)
 
         # 4. Run ML Inference
-        predictions = predict_matches(raw_odds, model_dir="models")
+        predictions = predict_matches(valid_odds, model_dir="models") if valid_odds else []
 
         # 5. Merge results
         dashboard_data = []
         suggestions = []
-        for idx, match in enumerate(raw_odds):
+        for idx, match in enumerate(valid_odds):
             pred = predictions[idx] if idx < len(predictions) else {}
 
             home_prob = pred.get("prob_home_win", 0.0)
@@ -290,6 +315,8 @@ def get_dashboard_data():
                 "prob_away_win": pred.get("prob_away_win", 0.0),
                 "home_odds": home_odds,
                 "home_edge": edge,
+                "match_time": match.get("commence_time", "TBA"),
+                "league": match.get("sport_title", "PREMIER LEAGUE"),
             }
             dashboard_data.append(match_obj)
 
