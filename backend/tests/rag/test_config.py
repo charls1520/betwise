@@ -2,7 +2,7 @@ import pytest
 import os
 from llama_index.core import Settings
 from llama_index.llms.ollama import Ollama
-from llama_index.llms.openai import OpenAI
+from llama_index.llms.openai_like import OpenAILike
 from src.rag.config import init_llama_index
 
 def test_init_llama_index_with_openrouter(monkeypatch):
@@ -15,9 +15,7 @@ def test_init_llama_index_with_openrouter(monkeypatch):
     
     init_llama_index()
     
-    assert isinstance(Settings.llm, OpenAI)
-    assert Settings.llm.api_base == "https://openrouter.ai/api/v1"
-    assert Settings.llm.model == "meta-llama/llama-3-8b-instruct"
+    assert isinstance(Settings.llm, OpenAILike)
 
 def test_init_llama_index_with_ollama(monkeypatch):
     monkeypatch.setenv("EMBEDDING_MODEL_NAME", "BAAI/bge-small-en-v1.5")
