@@ -171,15 +171,15 @@ export default function DashboardPanel({ isNavOpen, isChatOpen }: { isNavOpen?: 
                     <div className="flex gap-2">
                       <button className="flex-1 bg-[#010e24] p-2 rounded text-center hover:bg-[#152c4e] transition-colors">
                         <span className="block text-[8px] text-[#9eabc8]">1</span>
-                        <span className="font-['Space_Grotesk'] font-bold text-xs text-[#6bff8f]">{(match.prob_home_win * 100).toFixed(1)}%</span>
+                        <span className={`font-['Space_Grotesk'] font-bold text-xs ${Math.max(match.prob_home_win, match.prob_draw, match.prob_away_win) === match.prob_home_win ? 'text-[#6bff8f]' : 'text-white'}`}>{(match.prob_home_win * 100).toFixed(1)}%</span>
                       </button>
                       <button className="flex-1 bg-[#010e24] p-2 rounded text-center hover:bg-[#152c4e] transition-colors">
                         <span className="block text-[8px] text-[#9eabc8]">X</span>
-                        <span className="font-['Space_Grotesk'] font-bold text-xs text-white">{(match.prob_draw * 100).toFixed(1)}%</span>
+                        <span className={`font-['Space_Grotesk'] font-bold text-xs ${Math.max(match.prob_home_win, match.prob_draw, match.prob_away_win) === match.prob_draw ? 'text-[#6bff8f]' : 'text-white'}`}>{(match.prob_draw * 100).toFixed(1)}%</span>
                       </button>
                       <button className="flex-1 bg-[#010e24] p-2 rounded text-center hover:bg-[#152c4e] transition-colors">
                         <span className="block text-[8px] text-[#9eabc8]">2</span>
-                        <span className="font-['Space_Grotesk'] font-bold text-xs text-white">{(match.prob_away_win * 100).toFixed(1)}%</span>
+                        <span className={`font-['Space_Grotesk'] font-bold text-xs ${Math.max(match.prob_home_win, match.prob_draw, match.prob_away_win) === match.prob_away_win ? 'text-[#6bff8f]' : 'text-white'}`}>{(match.prob_away_win * 100).toFixed(1)}%</span>
                       </button>
                     </div>
                   </div>
@@ -188,11 +188,11 @@ export default function DashboardPanel({ isNavOpen, isChatOpen }: { isNavOpen?: 
                     <div className="flex gap-2">
                       <button className="flex-1 bg-[#010e24] p-2 rounded text-center hover:bg-[#152c4e] transition-colors">
                         <span className="block text-[8px] text-[#9eabc8]">MÁS 2.5</span>
-                        <span className="font-['Space_Grotesk'] font-bold text-xs text-white">{(match.prob_home_win * 1.5 * 100).toFixed(1)}%</span>
+                        <span className={`font-['Space_Grotesk'] font-bold text-xs ${(match.prob_home_win * 1.5) > match.prob_away_win ? 'text-[#6bff8f]' : 'text-white'}`}>{(match.prob_home_win * 1.5 * 100).toFixed(1)}%</span>
                       </button>
                       <button className="flex-1 bg-[#010e24] p-2 rounded text-center hover:bg-[#152c4e] transition-colors">
                         <span className="block text-[8px] text-[#9eabc8]">MENOS 2.5</span>
-                        <span className="font-['Space_Grotesk'] font-bold text-xs text-[#6bff8f]">{(match.prob_away_win * 100).toFixed(1)}%</span>
+                        <span className={`font-['Space_Grotesk'] font-bold text-xs ${match.prob_away_win > (match.prob_home_win * 1.5) ? 'text-[#6bff8f]' : 'text-white'}`}>{(match.prob_away_win * 100).toFixed(1)}%</span>
                       </button>
                     </div>
                   </div>

@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import ReactMarkdown from 'react-markdown';
 import type { ChatMessage } from '../types';
 
 export default function ChatPanel({ isOpen }: { isOpen?: boolean }) {
@@ -81,7 +82,9 @@ export default function ChatPanel({ isOpen }: { isOpen?: boolean }) {
               <p className={`text-[10px] font-bold mb-1 ${msg.role === 'user' ? 'text-[#6bff8f]' : 'text-[#47c4ff]'}`}>
                 {msg.role === 'user' ? 'TÚ' : 'IA KINETIC'}
               </p>
-              <p className="text-xs text-[#dbe6ff] leading-relaxed">{msg.content}</p>
+              <div className="text-xs text-[#dbe6ff] leading-relaxed markdown-body">
+                <ReactMarkdown>{msg.content}</ReactMarkdown>
+              </div>
               
               {/* Rich Sources */}
               {msg.sources && msg.sources.length > 0 && (
