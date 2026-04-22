@@ -60,3 +60,20 @@ def fetch_clubelo_history(club_name: str):
         print(f"Clubelo history error for {club_name}: {e}")
         
     return pd.DataFrame()
+
+def fetch_clubelo_bulk_history(date_str: str):
+    """
+    Downloads the entire global Elo list for a specific date.
+    Date must be YYYY-MM-DD.
+    """
+    import pandas as pd
+    url = f"http://api.clubelo.com/{date_str}"
+    try:
+        csv_data = _fetch_clubelo_with_retry(url)
+        df = pd.read_csv(io.StringIO(csv_data))
+        if 'Elo' in df.columns and 'Club' in df.columns:
+            return df
+    except Exception as e:
+        print(f"Clubelo bulk history error for {date_str}: {e}")
+        
+    return pd.DataFrame()
