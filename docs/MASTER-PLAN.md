@@ -165,12 +165,19 @@ BetWise es un asistente web de apuestas deportivas enfocado en la Premier League
 - [ ] Actualizar interfaz en React y componentes de Partido para soportar nombres y UTC-5
 - [ ] Implementar menús laterales colapsables (`DashboardPanel` dinámico, `ChatPanel` colapsable)
 
-### 25. Refinamiento de Calidad de ML y Scrapers (Pendiente)
+### 25. Refinamiento de Calidad de ML y Scrapers (Completado)
 - [x] Brainstorming y Diseño de Refinamiento de Calidad
-- [ ] Parametrizar ligas en scraper de Understat
-- [ ] Implementar validadores de suficiencia de historial
-- [ ] Mejorar Feature Engineering (Rolling Averages e Imputación de NaNs)
-- [ ] Actualizar modelo global y manejo de NaNs en entrenamiento
+- [x] Parametrizar ligas en scraper de Understat
+- [x] Implementar validadores de suficiencia de historial
+- [x] Mejorar Feature Engineering (Rolling Averages e Imputación de NaNs)
+- [x] Actualizar modelo global y manejo de NaNs en entrenamiento
+
+### 26. Ingesta de Datos 100% Reales (Pendiente)
+- [x] Brainstorming y Diseño de Ingesta 100% Real
+- [ ] Tolerancia Cero a Vacíos (Hard Fails en Understat contra Cloudflare)
+- [ ] Cruce de datos Understat por Equipo y Año (sin usar Fecha)
+- [ ] Descarga Masiva (Bulk Download) de Clubelo para evitar rate limits
+- [ ] Actualización del motor de orquestación histórica
 
 ---
 
