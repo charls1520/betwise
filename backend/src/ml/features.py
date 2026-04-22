@@ -5,6 +5,11 @@ def build_features_for_matches(matches: list) -> pd.DataFrame:
     if df.empty:
         return df
 
+    # Impute NaNs with forward fill per team, then global median
+    for col in ['Home_xG', 'Away_xG', 'Home_Elo', 'Away_Elo', 'home_xg', 'away_xg', 'home_elo', 'away_elo']:
+        if col in df.columns:
+            df[col] = df[col].ffill().fillna(df[col].median()).fillna(0)
+
     # We now expect 'Home_xG', 'Away_xG', 'Home_Elo', 'Away_Elo' instead of shots/corners
     if all(col in df.columns for col in ['Home_xG', 'Away_xG', 'Home_Elo', 'Away_Elo']):
         df["xg_diff"] = df["Home_xG"] - df["Away_xG"]

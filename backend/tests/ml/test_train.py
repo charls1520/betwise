@@ -21,3 +21,16 @@ def test_train_and_save_models(tmp_path):
     assert "goals_model" in models
     assert os.path.exists(os.path.join(model_dir, "winner_model.joblib"))
     assert os.path.exists(os.path.join(model_dir, "goals_model.joblib"))
+
+def test_train_and_save_models_with_imputation(tmp_path):
+    df = pd.DataFrame({
+        "xg_diff": [1.0, -0.5, None, 2.0],
+        "elo_diff": [100, -50, 20, None],
+        "target_1x2": [1, 2, 0, 1],
+        "target_over25": [1, 0, 1, 1]
+    })
+    
+    # Train should handle NaNs by dropping or imputing internally
+    models = train_and_save_models(df, model_dir=str(tmp_path))
+    assert "winner_model" in models
+    assert "goals_model" in models

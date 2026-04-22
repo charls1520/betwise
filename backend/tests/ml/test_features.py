@@ -66,3 +66,14 @@ def test_build_features_from_historical():
     assert "target_1x2" in df.columns
     assert df["target_1x2"].iloc[0] == 1  # Home
     assert df["target_1x2"].iloc[1] == 0  # Draw
+
+def test_build_features_rolling_and_imputation():
+    matches = [
+        {"HomeTeam": "A", "AwayTeam": "B", "Home_xG": 1.0, "Away_xG": 0.5, "Home_Elo": 1500, "Away_Elo": 1400, "FTR": "H"},
+        {"HomeTeam": "C", "AwayTeam": "A", "Home_xG": None, "Away_xG": 1.5, "Home_Elo": 1450, "Away_Elo": None, "FTR": "A"}
+    ]
+    df = build_features_for_matches(matches)
+    
+    # Check NaN imputation (forward fill or global mean fallback)
+    assert not df["xg_diff"].isna().any()
+    assert not df["elo_diff"].isna().any()

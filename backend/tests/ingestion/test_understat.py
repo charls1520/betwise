@@ -2,7 +2,11 @@ import pytest
 from src.ingestion.scrapers.understat import fetch_current_xg_stats
 
 
-def test_fetch_current_xg_stats_playwright():
+def test_fetch_current_xg_stats_playwright_la_liga():
+    stats = fetch_current_xg_stats("La_liga")
+    assert stats is not None
+    assert isinstance(stats, dict)
+    assert len(stats.keys()) > 0
     # Since playwright is hard to mock correctly without a real browser context,
     # we will do a basic integration test that actually fires up the headless browser.
     # This ensures it really works against Cloudflare in testing.
