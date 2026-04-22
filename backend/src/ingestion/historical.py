@@ -2,6 +2,9 @@ import os
 import pandas as pd
 import requests
 import io
+import time
+import random
+from tenacity import retry, stop_after_attempt, wait_exponential
 from src.ingestion.normalizer import TeamNormalizer
 from src.ingestion.scrapers.understat_historical import fetch_understat_historical_season
 from src.ingestion.scrapers.clubelo import fetch_clubelo_history
@@ -13,6 +16,16 @@ def get_elo_for_date(df_elo: pd.DataFrame, target_date: pd.Timestamp) -> float:
     if not res.empty:
         return res.iloc[0]['Elo']
     return None
+
+@retry(stop=stop_after_attempt(3), wait=wait_exponential(multiplier=1, min=2, max=10))
+def fetch_with_retry(url: str) -> str:
+    headers = {
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+        "Accept-Language": "en-US,en;q=0.9"
+    }
+    response = requests.get(url, headers=headers, timeout=15)
+    response.raise_for_status()
+    return response.text
 
 from src.ingestion.config import LEAGUES_CONFIG
 
@@ -51,10 +64,11 @@ def download_football_data_co_uk(seasons: list = ["2324", "2223", "2122"]) -> pd
         for season in seasons:
             url = base_url.format(season, fd_id)
             try:
-                response = requests.get(url, timeout=10)
-                if response.status_code != 200:
-                    continue
-                df = pd.read_csv(io.StringIO(response.text))
+                # Random delay before fetching new season
+                time.sleep(random.uniform(1.0, 3.0))
+                
+                csv_text = fetch_with_retry(url)
+                df = pd.read_csv(io.StringIO(csv_text))
                 df["Date"] = pd.to_datetime(df["Date"], format="%d/%m/%Y", errors="coerce")
                 df = df.dropna(subset=['Date', 'HomeTeam', 'AwayTeam'])
                 
@@ -86,6 +100,8 @@ def download_football_data_co_uk(seasons: list = ["2324", "2223", "2122"]) -> pd
                     if norm_t:
                         clubelo_name = norm_t.replace(" ", "")
                         elo_cache[t] = fetch_clubelo_history(clubelo_name)
+                        # Avoid hammering Clubelo
+                        time.sleep(random.uniform(0.5, 1.5))
                 
                 # Iterate and enrich missing matches
                 enhanced_rows = []
@@ -100,8 +116,8 @@ def download_football_data_co_uk(seasons: list = ["2324", "2223", "2122"]) -> pd
                     h_xg, a_xg, h_elo, a_elo = None, None, None, None
                     
                     if not df_understat.empty and norm_home and norm_away:
-                        h_xg_row = df_understat[(df_understat['Team'] == norm_home) & (df_understat['Date'] == date)]
-                        a_xg_row = df_understat[(df_understat['Team'] == norm_away) & (df_understat['Date'] == date)]
+                        h_xg_row = df_understat[(df_understat['Team'] == norm_home) & (df_understat['HomeTeam_Und'] == norm_home) & (df_understat['AwayTeam_Und'] == norm_away)]
+                        a_xg_row = df_understat[(df_understat['Team'] == norm_away) & (df_understat['HomeTeam_Und'] == norm_home) & (df_understat['AwayTeam_Und'] == norm_away)]
                         if not h_xg_row.empty: h_xg = h_xg_row.iloc[0]['xG']
                         if not a_xg_row.empty: a_xg = a_xg_row.iloc[0]['xG']
                     
@@ -127,6 +143,8 @@ def download_football_data_co_uk(seasons: list = ["2324", "2223", "2122"]) -> pd
                     
             except Exception as e:
                 print(f"Failed to download or process season {season} for {league['name']}: {e}")
+                # We log the error but allow the loop to continue to the next season/league
+                continue
 
     # Append to cache
     if dfs_to_append:
