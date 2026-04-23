@@ -191,6 +191,7 @@ BetWise es un asistente web de apuestas deportivas enfocado en la Premier League
 - [x] Remoción de Fallbacks y Keys Hardcodeadas (tasks.py)
 - [x] Limpieza de Mocks en Reglas de Fiabilidad (reliability.py)
 - [x] Limpieza de Archivos de Entorno y Configuración (.env)
+- [x] Diseño y Plan de Frontend & Infra
 - [ ] Refactor Frontend a variables de entorno
 - [ ] Actualización Docker Compose
 
