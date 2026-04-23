@@ -1,53 +1,40 @@
-import json
-import re
-import random
+import requests
 import pandas as pd
-from scrapling import Fetcher
 from src.utils.logger import get_logger
 
 logger = get_logger()
 
 def fetch_understat_historical_season(year: str, league_id: str = "EPL") -> pd.DataFrame:
-    url = f"https://understat.com/league/{league_id}/{year}"
-    logger.info(f"Fetching Understat data for {league_id} {year}")
+    url = f"https://understat.com/main/getLeagueData/{league_id}/{year}"
+    logger.info(f"Fetching Understat API data for {league_id} {year}")
+    
+    headers = {
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36",
+        "X-Requested-With": "XMLHttpRequest",
+        "Accept": "application/json, text/javascript, */*; q=0.01"
+    }
     
     try:
-        # Use basic Fetcher, which is fast and lightweight
-        fetcher = Fetcher(
-            auto_match=False, # Disable auto_match to avoid downloading unnecessary resources
-        )
-        page = fetcher.get(url)
-        
-        # Scrapling returns the page object, we can get its HTML text
-        content = page.text
-        
-        match = re.search(r"var teamsData\s*=\s*JSON\.parse\('([^']+)'\);", content)
-        if match:
-            decoded = bytes(match.group(1), "utf-8").decode("unicode_escape")
-            data = json.loads(decoded)
-        else:
-            raise Exception("Could not find teamsData JSON in page content (Cloudflare Block or Empty Data)")
+        response = requests.get(url, headers=headers, verify=False, timeout=15)
+        response.raise_for_status()
+        data = response.json()
         
         matches_data = []
-        for team_id, team_info in data.items():
+        for team_id, team_info in data.get("teams", {}).items():
             title = team_info.get("title")
             history = team_info.get("history", [])
-            if not history:
-                continue
             for match_data in history:
-                h_team = match_data.get("h", {}).get("title", "")
-                a_team = match_data.get("a", {}).get("title", "")
                 matches_data.append({
                     "Team": title,
-                    "HomeTeam_Und": h_team,
-                    "AwayTeam_Und": a_team,
-                    "Date": match_data.get("date").split(" ")[0],
+                    "h_a": match_data.get("h_a"),
+                    "Date": match_data.get("date", "").split(" ")[0],
                     "xG": float(match_data.get("xG", 0)),
                     "xGA": float(match_data.get("xGA", 0))
                 })
         
         if not matches_data:
-            raise Exception("Parsed data contains no matches")
+            logger.warning(f"No match data found in API response for {league_id} {year}")
+            return pd.DataFrame()
             
         df = pd.DataFrame(matches_data)
         df["Date"] = pd.to_datetime(df["Date"])
@@ -55,5 +42,5 @@ def fetch_understat_historical_season(year: str, league_id: str = "EPL") -> pd.D
         return df
         
     except Exception as e:
-        logger.exception(f"Scrapling Error for {league_id} {year}: {e}")
+        logger.exception(f"Understat API Error for {league_id} {year}: {e}")
         return pd.DataFrame()

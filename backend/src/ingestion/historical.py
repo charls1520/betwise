@@ -102,11 +102,19 @@ def download_football_data_co_uk(seasons: list = ["2324", "2223", "2122"]) -> pd
                 # Prepare Elo cache
                 teams = pd.concat([missing_df['HomeTeam'], missing_df['AwayTeam']]).unique().tolist()
                 elo_cache = {}
+                import re
                 for t in teams:
                     norm_t = normalizer.normalize(t)
                     if norm_t:
-                        clubelo_name = norm_t.replace(" ", "")
-                        elo_cache[t] = fetch_clubelo_history(clubelo_name)
+                        raw_clean = re.sub(r'[^a-zA-Z0-9]', '', t)
+                        if 'Forest' in t: raw_clean = 'Forest'
+                        elif 'Utd' in t: raw_clean = raw_clean.replace('Utd', 'United')
+                        
+                        df_elo = fetch_clubelo_history(raw_clean)
+                        if df_elo.empty:
+                            df_elo = fetch_clubelo_history(norm_t.replace(" ", ""))
+                            
+                        elo_cache[t] = df_elo
                         # Avoid hammering Clubelo
                         time.sleep(random.uniform(0.5, 1.5))
                 
@@ -123,10 +131,18 @@ def download_football_data_co_uk(seasons: list = ["2324", "2223", "2122"]) -> pd
                     h_xg, a_xg, h_elo, a_elo = None, None, None, None
                     
                     if not df_understat.empty and norm_home and norm_away:
-                        h_xg_row = df_understat[(df_understat['Team'] == norm_home) & (df_understat['HomeTeam_Und'] == norm_home) & (df_understat['AwayTeam_Und'] == norm_away)]
-                        a_xg_row = df_understat[(df_understat['Team'] == norm_away) & (df_understat['HomeTeam_Und'] == norm_home) & (df_understat['AwayTeam_Und'] == norm_away)]
-                        if not h_xg_row.empty: h_xg = h_xg_row.iloc[0]['xG']
-                        if not a_xg_row.empty: a_xg = a_xg_row.iloc[0]['xG']
+                        h_cands = df_understat[(df_understat['Team'] == norm_home) & (df_understat['h_a'] == 'h')].copy()
+                        a_cands = df_understat[(df_understat['Team'] == norm_away) & (df_understat['h_a'] == 'a')].copy()
+                        
+                        if not h_cands.empty:
+                            h_cands['date_diff'] = (h_cands['Date'] - date).abs().dt.days
+                            h_match = h_cands[h_cands['date_diff'] <= 3].sort_values('date_diff')
+                            if not h_match.empty: h_xg = h_match.iloc[0]['xG']
+                            
+                        if not a_cands.empty:
+                            a_cands['date_diff'] = (a_cands['Date'] - date).abs().dt.days
+                            a_match = a_cands[a_cands['date_diff'] <= 3].sort_values('date_diff')
+                            if not a_match.empty: a_xg = a_match.iloc[0]['xG']
                     
                     if home in elo_cache and elo_cache[home] is not None:
                         h_elo = get_elo_for_date(elo_cache[home], date)
