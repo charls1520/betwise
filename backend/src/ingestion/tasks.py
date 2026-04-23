@@ -8,6 +8,7 @@ from src.ingestion.scrapers.clubelo import fetch_clubelo_stats
 from src.ingestion.config import LEAGUES_CONFIG
 from src.utils.logger import get_logger
 from src.ingestion.validators import NewsArticle, validate_volume
+from src.ingestion.state import get_last_run, update_last_run
 from datetime import datetime
 
 load_dotenv()
@@ -55,15 +56,21 @@ def run_daily_scraping(odds_api_key: str = None):
     all_odds = []
     all_xg = {}
 
+    last_odds_run = get_last_run("odds_api")
+    last_xg_run = get_last_run("understat")
+
     for league in LEAGUES_CONFIG:
         logger.info(f"Fetching data for {league['name']}...")
         
         try:
             odds = fetch_premier_league_odds(api_key=odds_api_key, sport_key=league["odds_api_id"])
+            if last_odds_run:
+                odds = [o for o in odds if o.get("commence_time", "") > last_odds_run]
+
             if validate_volume(len(odds), expected_minimum=1):
                 all_odds.extend(odds)
             else:
-                logger.error(f"Odds volume validation failed for {league['name']}.")
+                logger.info(f"No new odds or volume too low for {league['name']}.")
         except Exception as e:
             logger.error(f"Failed odds for {league['name']}: {e}")
             
@@ -76,11 +83,13 @@ def run_daily_scraping(odds_api_key: str = None):
         except Exception as e:
             logger.error(f"Failed xG for {league['name']}: {e}")
 
-    if validate_volume(len(all_odds), expected_minimum=1):
+    if len(all_odds) > 0:
+        update_last_run("odds_api")
         odds_file = save_raw_data("odds", {"matches": all_odds})
         logger.info(f"Saved multi-league odds to {odds_file}")
         
-    if validate_volume(len(all_xg), expected_minimum=1):
+    if len(all_xg) > 0:
+        update_last_run("understat")
         xg_file = save_raw_data("xg", all_xg)
         logger.info(f"Saved multi-league xG to {xg_file}")
 
