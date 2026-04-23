@@ -195,11 +195,11 @@ BetWise es un asistente web de apuestas deportivas enfocado en la Premier League
 - [x] Refactor Frontend a variables de entorno
 - [x] Actualización Docker Compose
 
-### 29. Optimización de Ingesta, ML y Frontend (En progreso)
+### 29. Optimización de Ingesta, ML y Frontend (Completo)
 - [x] Brainstorming y Diseño de Optimizaciones
-- [ ] Implementar Ingesta Delta (Filtro por origen y Caché de Estado)
-- [ ] Añadir validación y umbrales de regresión al entrenamiento ML
-- [ ] Implementar Short Polling en el Frontend para actualizaciones en tiempo real
+- [x] Implementar Ingesta Delta (Filtro por origen y Caché de Estado)
+- [x] Añadir validación y umbrales de regresión al entrenamiento ML
+- [x] Implementar Short Polling en el Frontend para actualizaciones en tiempo real
 
 ---
 
