@@ -51,7 +51,7 @@ export default function DashboardPanel({ isNavOpen, isChatOpen }: { isNavOpen?: 
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:8080';
+    const apiUrl = import.meta.env.VITE_API_URL || '';
     fetch(`${apiUrl}/api/dashboard`)
       .then(res => res.json())
       .then(fetchedData => {

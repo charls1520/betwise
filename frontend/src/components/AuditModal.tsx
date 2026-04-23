@@ -15,7 +15,7 @@ export default function AuditModal({ isOpen, onClose }: AuditModalProps) {
   const [data, setData] = useState<AuditData | null>(null);
 
   useEffect(() => {
-    const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:8080';
+    const apiUrl = import.meta.env.VITE_API_URL || '';
     if (isOpen) {
       fetch(`${apiUrl}/api/health/audit`)
         .then(res => res.json())
