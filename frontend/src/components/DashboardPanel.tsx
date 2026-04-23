@@ -52,21 +52,32 @@ export default function DashboardPanel({ isNavOpen, isChatOpen }: { isNavOpen?: 
 
   useEffect(() => {
     const apiUrl = import.meta.env.VITE_API_URL || '';
-    fetch(`${apiUrl}/api/dashboard`)
-      .then(res => res.json())
-      .then(fetchedData => {
-        // Handle case where error is returned as list of dicts from old format
-        if (Array.isArray(fetchedData) && fetchedData.length > 0 && fetchedData[0].error) {
-           setData({ matches: [], suggestions: [], error: fetchedData[0].error });
-        } else {
-           setData(fetchedData as DashboardPayload);
-        }
-        setLoading(false);
-      })
-      .catch(err => {
-        console.error("Error fetching dashboard data", err);
-        setLoading(false);
-      });
+    const fetchData = () => {
+      fetch(`${apiUrl}/api/dashboard`)
+        .then(res => res.json())
+        .then(fetchedData => {
+          // Handle case where error is returned as list of dicts from old format
+          if (Array.isArray(fetchedData) && fetchedData.length > 0 && fetchedData[0].error) {
+             setData({ matches: [], suggestions: [], error: fetchedData[0].error });
+          } else {
+             setData(fetchedData as DashboardPayload);
+          }
+          setLoading(false);
+        })
+        .catch(err => {
+          console.error("Error fetching dashboard data", err);
+          setLoading(false);
+        });
+    };
+
+    // Initial fetch
+    fetchData();
+
+    // Set up short-polling interval (60 seconds)
+    const intervalId = setInterval(fetchData, 60000);
+
+    // Cleanup interval on unmount
+    return () => clearInterval(intervalId);
   }, []);
 
   if (loading) return <main className={`flex-grow overflow-y-auto px-6 py-8 text-[#6bff8f] transition-all duration-300 ${isNavOpen ? 'ml-64' : 'ml-0'} ${isChatOpen ? 'mr-80' : 'mr-0'}`}>Cargando analíticas...</main>;
