@@ -18,11 +18,9 @@ def meets_data_threshold(team_name: str, xg_stats: dict, min_matches: int = 10) 
         return False
 
     team_data = xg_stats[team_name]
-    # Since our scraper currently only grabs averages, we will mock the matches_played
-    # check for now by assuming if they have data in the dict, they passed the threshold,
-    # unless matches_played is explicitly provided and too low.
-    if "matches_played" in team_data:
-        return team_data["matches_played"] >= min_matches
-
-    # If no matches_played field, assume true if data exists
-    return True
+    
+    # Require explicit 'matches_played' key and enforce threshold
+    if "matches_played" not in team_data:
+        return False
+        
+    return team_data["matches_played"] >= min_matches

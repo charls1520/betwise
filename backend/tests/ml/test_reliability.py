@@ -12,11 +12,15 @@ def test_value_edge():
 
 
 def test_data_threshold():
-    # In V1 we mock the 10 match threshold check by looking if the team exists in the xG stats
+    # Strict validation: matches_played must exist and be >= 10
     stats = {"Arsenal": {"xg_for_avg": 2.1, "matches_played": 15}}
     assert meets_data_threshold("Arsenal", stats) is True
 
     stats_low = {"Ipswich": {"xg_for_avg": 1.1, "matches_played": 5}}
     assert meets_data_threshold("Ipswich", stats_low) is False
+
+    stats_mocked = {"Chelsea": {"xg_for_avg": 1.5}}
+    # Should now fail because matches_played is missing
+    assert meets_data_threshold("Chelsea", stats_mocked) is False
 
     assert meets_data_threshold("Unknown Team", stats) is False
