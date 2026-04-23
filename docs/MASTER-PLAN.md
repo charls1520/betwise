@@ -152,18 +152,18 @@ BetWise es un asistente web de apuestas deportivas enfocado en la Premier League
 - [x] Aislar errores para no romper el bucle masivo
 - [x] Configurar reintentos exponenciales en endpoints problemáticos
 
-### 23. Mitigación de Rate Limits del LLM (Pendiente)
+### 23. Mitigación de Rate Limits del LLM (Completo)
 - [x] Brainstorming y Diseño de LLM Rate Limits (Completo)
-- [ ] Aplicar `tenacity` a la llamada de `Settings.llm` en el Normalizador
-- [ ] Configurar backoff exponencial para salvar respuestas 429
-- [ ] Manejar `RetryError` en el bloque principal para evitar caídas
-- [ ] Asegurar que las pruebas pasen con la nueva arquitectura de reintentos
+- [x] Aplicar `tenacity` a la llamada de `Settings.llm` en el Normalizador
+- [x] Configurar backoff exponencial para salvar respuestas 429
+- [x] Manejar `RetryError` en el bloque principal para evitar caídas
+- [x] Asegurar que las pruebas pasen con la nueva arquitectura de reintentos
 
-### 24. Mejoras de UI: Datos Completos y Menús Colapsables (Pendiente)
+### 24. Mejoras de UI: Datos Completos y Menús Colapsables (Completo)
 - [x] Brainstorming y Diseño de UI Completa y Menús
-- [ ] Actualizar endpoint `/api/dashboard` con data dinámica (hora y liga)
-- [ ] Actualizar interfaz en React y componentes de Partido para soportar nombres y UTC-5
-- [ ] Implementar menús laterales colapsables (`DashboardPanel` dinámico, `ChatPanel` colapsable)
+- [x] Actualizar endpoint `/api/dashboard` con data dinámica (hora y liga)
+- [x] Actualizar interfaz en React y componentes de Partido para soportar nombres y UTC-5
+- [x] Implementar menús laterales colapsables (`DashboardPanel` dinámico, `ChatPanel` colapsable)
 
 ### 25. Refinamiento de Calidad de ML y Scrapers (Completado)
 - [x] Brainstorming y Diseño de Refinamiento de Calidad
@@ -179,12 +179,20 @@ BetWise es un asistente web de apuestas deportivas enfocado en la Premier League
 - [ ] Descarga Masiva (Bulk Download) de Clubelo para evitar rate limits
 - [ ] Actualización del motor de orquestación histórica
 
-### 27. Migración a Scrapling y Sistema de Logs (Pendiente)
+### 27. Migración a Scrapling y Sistema de Logs (En progreso)
 - [x] Brainstorming y Diseño de Migración y Logging
-- [ ] Implementar sistema de logs centralizado (`loguru`)
-- [ ] Reemplazar Playwright por Scrapling en `understat_historical.py`
-- [ ] Actualizar dependencias (remover Playwright, agregar Scrapling/Loguru)
-- [ ] Refactorizar scripts de ingesta para usar el nuevo logger en lugar de `print()`
+- [x] Implementar sistema de logs centralizado (`loguru`)
+- [x] Reemplazar Playwright por API/Requests en `understat_historical.py`
+- [ ] Actualizar dependencias (remover Playwright completamente del proyecto, refactorizando `understat.py`)
+- [x] Refactorizar scripts de ingesta para usar el nuevo logger en lugar de `print()`
+
+### 28. Limpieza de Hardcodes y Mocks (En progreso)
+- [x] Brainstorming y Diseño de Limpieza del Backend
+- [ ] Remoción de Fallbacks y Keys Hardcodeadas (tasks.py)
+- [ ] Limpieza de Mocks en Reglas de Fiabilidad (reliability.py)
+- [ ] Limpieza de Archivos de Entorno y Configuración (.env)
+- [ ] Refactor Frontend a variables de entorno
+- [ ] Actualización Docker Compose
 
 ---
 
