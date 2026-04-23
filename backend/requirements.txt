@@ -18,9 +18,10 @@ numpy
 scikit-learn
 joblib
 python-dotenv
-playwright
+loguru
 nest-asyncio
 apscheduler
-scrapling
+scrapling[fetchers]
 pydantic
 llama-index-llms-openai
+llama-index-llms-openai-like

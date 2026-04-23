@@ -4,10 +4,13 @@ from thefuzz import process
 from typing import List, Optional
 from llama_index.core import Settings
 from tenacity import retry, stop_after_attempt, wait_exponential, RetryError
+from src.utils.logger import get_logger
+
+logger = get_logger()
 
 
 class TeamNormalizer:
-    def __init__(self, canonical_teams: List[str], threshold: int = 95):
+    def __init__(self, canonical_teams: List[str], threshold: int = 85):
         self.canonical_teams = canonical_teams
         self.threshold = threshold
         self.cache_file = "data/team_aliases.json"
@@ -39,12 +42,17 @@ class TeamNormalizer:
             f"If it is none of them, reply 'NONE'."
         )
         
-        response = Settings.llm.complete(prompt)
+        try:
+            response = Settings.llm.complete(prompt)
+        except ValueError as e:
+            logger.error(f"LLM Configuration Error (Auto-healing skipped): {e}")
+            return None
+            
         answer = str(response).strip()
         
         # Verify the LLM didn't hallucinate a name not in the list
         if answer in self.canonical_teams:
-            print(f"Auto-Healing learned that '{raw_name}' means '{answer}'")
+            logger.info(f"Auto-Healing learned that '{raw_name}' means '{answer}'")
             return answer
         return None
 
@@ -69,7 +77,7 @@ class TeamNormalizer:
 
         # 3. LLM Auto-Healing (Only if score > 50 to avoid total garbage)
         if score > 50:
-            print(f"WARNING: Unmapped team '{raw_name}' (Score: {score}). Asking LLM...")
+            logger.warning(f"Unmapped team '{raw_name}' (Score: {score}). Asking LLM...")
             try:
                 llm_match = self._ask_llm(raw_name)
                 if llm_match:
@@ -77,11 +85,11 @@ class TeamNormalizer:
                     self._save_cache()
                     return llm_match
             except RetryError as e:
-                print(f"LLM Auto-Healing failed after retries for '{raw_name}': {e}")
+                logger.error(f"LLM Auto-Healing failed after retries for '{raw_name}': {e}")
             except Exception as e:
-                print(f"Unexpected LLM error for '{raw_name}': {e}")
+                logger.exception(f"Unexpected LLM error for '{raw_name}': {e}")
 
-        print(
-            f"WARNING: Unmapped team name '{raw_name}' (Score: {score}). Discarding."
+        logger.warning(
+            f"Unmapped team name '{raw_name}' (Score: {score}). Discarding."
         )
         return None

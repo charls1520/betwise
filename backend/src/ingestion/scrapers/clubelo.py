@@ -6,11 +6,14 @@ from typing import List
 from tenacity import retry, stop_after_attempt, wait_exponential
 from src.ingestion.validators import EloScore, validate_volume
 from src.ingestion.normalizer import TeamNormalizer
+from src.utils.logger import get_logger
+
+logger = get_logger()
 
 @retry(stop=stop_after_attempt(3), wait=wait_exponential(multiplier=1, min=2, max=10))
 def _fetch_clubelo_with_retry(url: str) -> str:
     headers = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36"}
-    response = requests.get(url, headers=headers, timeout=15)
+    response = requests.get(url, headers=headers, timeout=30)
     response.raise_for_status()
     return response.text
 
@@ -21,7 +24,7 @@ def fetch_clubelo_stats() -> List[dict]:
     try:
         csv_data = _fetch_clubelo_with_retry(url)
     except Exception as e:
-        print(f"Clubelo fetch error: {e}")
+        logger.error(f"Clubelo fetch error: {e}")
         return []
         
     reader = csv.DictReader(io.StringIO(csv_data))
@@ -57,7 +60,7 @@ def fetch_clubelo_history(club_name: str):
             df['To'] = pd.to_datetime(df['To'])
             return df
     except Exception as e:
-        print(f"Clubelo history error for {club_name}: {e}")
+        logger.error(f"Clubelo history error for {club_name}: {e}")
         
     return pd.DataFrame()
 
@@ -74,6 +77,6 @@ def fetch_clubelo_bulk_history(date_str: str):
         if 'Elo' in df.columns and 'Club' in df.columns:
             return df
     except Exception as e:
-        print(f"Clubelo bulk history error for {date_str}: {e}")
+        logger.error(f"Clubelo bulk history error for {date_str}: {e}")
         
     return pd.DataFrame()

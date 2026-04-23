@@ -4,10 +4,16 @@ import requests
 import io
 import time
 import random
+import urllib3
 from tenacity import retry, stop_after_attempt, wait_exponential
+from src.utils.logger import get_logger
+
+urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 from src.ingestion.normalizer import TeamNormalizer
 from src.ingestion.scrapers.understat_historical import fetch_understat_historical_season
 from src.ingestion.scrapers.clubelo import fetch_clubelo_history
+
+logger = get_logger()
 
 def get_elo_for_date(df_elo: pd.DataFrame, target_date: pd.Timestamp) -> float:
     if df_elo.empty: return None
@@ -23,7 +29,7 @@ def fetch_with_retry(url: str) -> str:
         "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
         "Accept-Language": "en-US,en;q=0.9"
     }
-    response = requests.get(url, headers=headers, timeout=15)
+    response = requests.get(url, headers=headers, timeout=15, verify=False)
     response.raise_for_status()
     return response.text
 
@@ -43,7 +49,7 @@ def download_football_data_co_uk(seasons: list = ["2324", "2223", "2122"]) -> pd
             cached_df = pd.read_csv(cache_file)
             cached_df["Date"] = pd.to_datetime(cached_df["Date"])
         except Exception as e:
-            print(f"Failed to read cache: {e}")
+            logger.error(f"Failed to read cache: {e}")
             cached_df = pd.DataFrame()
 
     dfs_to_append = []
@@ -59,7 +65,7 @@ def download_football_data_co_uk(seasons: list = ["2324", "2223", "2122"]) -> pd
     for league in LEAGUES_CONFIG:
         fd_id = league["football_data_id"]
         und_id = league["understat_id"]
-        print(f"Processing Historical Data for {league['name']}...")
+        logger.info(f"Processing Historical Data for {league['name']}...")
         
         for season in seasons:
             url = base_url.format(season, fd_id)
@@ -71,6 +77,7 @@ def download_football_data_co_uk(seasons: list = ["2324", "2223", "2122"]) -> pd
                 df = pd.read_csv(io.StringIO(csv_text))
                 df["Date"] = pd.to_datetime(df["Date"], format="%d/%m/%Y", errors="coerce")
                 df = df.dropna(subset=['Date', 'HomeTeam', 'AwayTeam'])
+                df = df.copy()
                 
                 # Find what we are missing
                 if not cached_df.empty:
@@ -81,10 +88,10 @@ def download_football_data_co_uk(seasons: list = ["2324", "2223", "2122"]) -> pd
                     missing_df = df.copy()
                     
                 if missing_df.empty:
-                    print(f"Season {season} is already fully cached. Skipping.")
+                    logger.info(f"Season {season} is already fully cached. Skipping.")
                     continue
                     
-                print(f"Processing {len(missing_df)} new matches for season {season}...")
+                logger.info(f"Processing {len(missing_df)} new matches for season {season}...")
                 
                 # Fetch Understat
                 year = season_to_year.get(season)
@@ -137,12 +144,12 @@ def download_football_data_co_uk(seasons: list = ["2324", "2223", "2122"]) -> pd
                 # Strict Anti-Void Filter (Drop Any row with None/NaN in features)
                 valid_season_df = season_enhanced_df.dropna(subset=['Home_xG', 'Away_xG', 'Home_Elo', 'Away_Elo'])
                 
-                print(f"Successfully merged {len(valid_season_df)} out of {len(missing_df)} matches (Dropped {len(missing_df) - len(valid_season_df)} invalid matches).")
+                logger.info(f"Successfully merged {len(valid_season_df)} out of {len(missing_df)} matches (Dropped {len(missing_df) - len(valid_season_df)} invalid matches).")
                 if not valid_season_df.empty:
                     dfs_to_append.append(valid_season_df)
                     
             except Exception as e:
-                print(f"Failed to download or process season {season} for {league['name']}: {e}")
+                logger.exception(f"Failed to download or process season {season} for {league['name']}: {e}")
                 # We log the error but allow the loop to continue to the next season/league
                 continue
 
