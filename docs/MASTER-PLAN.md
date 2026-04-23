@@ -1,7 +1,7 @@
 ---
 # Master Plan — BetWise
 
-**Última actualización:** 11 de Abril de 2026
+**Última actualización:** 23 de Abril de 2026
 
 ---
 
@@ -194,6 +194,12 @@ BetWise es un asistente web de apuestas deportivas enfocado en la Premier League
 - [x] Diseño y Plan de Frontend & Infra
 - [x] Refactor Frontend a variables de entorno
 - [x] Actualización Docker Compose
+
+### 29. Optimización de Ingesta, ML y Frontend (En progreso)
+- [x] Brainstorming y Diseño de Optimizaciones
+- [ ] Implementar Ingesta Delta (Filtro por origen y Caché de Estado)
+- [ ] Añadir validación y umbrales de regresión al entrenamiento ML
+- [ ] Implementar Short Polling en el Frontend para actualizaciones en tiempo real
 
 ---
 
