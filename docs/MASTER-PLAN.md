@@ -186,14 +186,14 @@ BetWise es un asistente web de apuestas deportivas enfocado en la Premier League
 - [ ] Actualizar dependencias (remover Playwright completamente del proyecto, refactorizando `understat.py`)
 - [x] Refactorizar scripts de ingesta para usar el nuevo logger en lugar de `print()`
 
-### 28. Limpieza de Hardcodes y Mocks (En progreso)
+### 28. Limpieza de Hardcodes y Mocks (Completo)
 - [x] Brainstorming y Diseño de Limpieza del Backend
 - [x] Remoción de Fallbacks y Keys Hardcodeadas (tasks.py)
 - [x] Limpieza de Mocks en Reglas de Fiabilidad (reliability.py)
 - [x] Limpieza de Archivos de Entorno y Configuración (.env)
 - [x] Diseño y Plan de Frontend & Infra
-- [ ] Refactor Frontend a variables de entorno
-- [ ] Actualización Docker Compose
+- [x] Refactor Frontend a variables de entorno
+- [x] Actualización Docker Compose
 
 ---
 
