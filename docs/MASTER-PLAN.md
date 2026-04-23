@@ -179,6 +179,13 @@ BetWise es un asistente web de apuestas deportivas enfocado en la Premier League
 - [ ] Descarga Masiva (Bulk Download) de Clubelo para evitar rate limits
 - [ ] Actualización del motor de orquestación histórica
 
+### 27. Migración a Scrapling y Sistema de Logs (Pendiente)
+- [x] Brainstorming y Diseño de Migración y Logging
+- [ ] Implementar sistema de logs centralizado (`loguru`)
+- [ ] Reemplazar Playwright por Scrapling en `understat_historical.py`
+- [ ] Actualizar dependencias (remover Playwright, agregar Scrapling/Loguru)
+- [ ] Refactorizar scripts de ingesta para usar el nuevo logger en lugar de `print()`
+
 ---
 
 ## Próximos pasos
