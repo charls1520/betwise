@@ -188,9 +188,9 @@ BetWise es un asistente web de apuestas deportivas enfocado en la Premier League
 
 ### 28. Limpieza de Hardcodes y Mocks (En progreso)
 - [x] Brainstorming y Diseño de Limpieza del Backend
-- [ ] Remoción de Fallbacks y Keys Hardcodeadas (tasks.py)
-- [ ] Limpieza de Mocks en Reglas de Fiabilidad (reliability.py)
-- [ ] Limpieza de Archivos de Entorno y Configuración (.env)
+- [x] Remoción de Fallbacks y Keys Hardcodeadas (tasks.py)
+- [x] Limpieza de Mocks en Reglas de Fiabilidad (reliability.py)
+- [x] Limpieza de Archivos de Entorno y Configuración (.env)
 - [ ] Refactor Frontend a variables de entorno
 - [ ] Actualización Docker Compose
 
