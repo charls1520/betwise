@@ -8,4 +8,4 @@ def test_fetch_bbc_sports_news():
     assert len(articles) <= 2
     if len(articles) > 0:
         assert "title" in articles[0]
-        assert "link" in articles[0]
+        assert "url" in articles[0]
