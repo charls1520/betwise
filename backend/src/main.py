@@ -141,6 +141,18 @@ def get_latest_ml_suggestions() -> list:
             with open(latest_elo, "r", encoding="utf-8") as f:
                 elo_stats = json.load(f).get("stats", {})
 
+        # Add imports at the top
+        from src.ingestion.recovery import fetch_xg_live, fetch_elo_live
+        from src.utils.audit_logger import log_unmatched_team
+        
+        league_avg_xg = 1.3
+        if xg_stats:
+            league_avg_xg = sum(v.get("xg_for_avg", 1.3) for v in xg_stats.values()) / len(xg_stats)
+            
+        league_avg_elo = 1500.0
+        if elo_stats:
+            league_avg_elo = sum(elo_stats.values()) / len(elo_stats)
+
         canonical_teams = list(xg_stats.keys()) if xg_stats else []
         normalizer = TeamNormalizer(canonical_teams)
 
@@ -148,13 +160,45 @@ def get_latest_ml_suggestions() -> list:
         for match in raw_odds:
             home_norm = normalizer.normalize(match.get("home_team", ""))
             away_norm = normalizer.normalize(match.get("away_team", ""))
+            
+            is_reliable = True
 
-            if home_norm and home_norm in xg_stats and away_norm and away_norm in xg_stats:
+            # Process Home Team
+            if home_norm and home_norm in xg_stats:
                 match["home_xg"] = xg_stats[home_norm].get("xg_for_avg")
+            else:
+                log_unmatched_team(match.get("home_team", "Unknown"), "xG")
+                live_xg = fetch_xg_live(home_norm or match.get("home_team", ""))
+                match["home_xg"] = live_xg.get("xg_for_avg", league_avg_xg)
+                is_reliable = False
+
+            if home_norm and home_norm in elo_stats:
+                match["home_elo"] = elo_stats[home_norm]
+            else:
+                log_unmatched_team(match.get("home_team", "Unknown"), "Elo")
+                live_elo = fetch_elo_live(home_norm or match.get("home_team", ""))
+                match["home_elo"] = live_elo if live_elo else league_avg_elo
+                is_reliable = False
+
+            # Process Away Team
+            if away_norm and away_norm in xg_stats:
                 match["away_xg"] = xg_stats[away_norm].get("xg_for_avg")
-                match["home_elo"] = elo_stats.get(home_norm, elo_stats.get(match.get("home_team"), 1500.0))
-                match["away_elo"] = elo_stats.get(away_norm, elo_stats.get(match.get("away_team"), 1500.0))
-                valid_odds.append(match)
+            else:
+                log_unmatched_team(match.get("away_team", "Unknown"), "xG")
+                live_xg = fetch_xg_live(away_norm or match.get("away_team", ""))
+                match["away_xg"] = live_xg.get("xg_for_avg", league_avg_xg)
+                is_reliable = False
+
+            if away_norm and away_norm in elo_stats:
+                match["away_elo"] = elo_stats[away_norm]
+            else:
+                log_unmatched_team(match.get("away_team", "Unknown"), "Elo")
+                live_elo = fetch_elo_live(away_norm or match.get("away_team", ""))
+                match["away_elo"] = live_elo if live_elo else league_avg_elo
+                is_reliable = False
+
+            match["is_reliable"] = is_reliable
+            valid_odds.append(match)
 
         if not valid_odds:
             return []
@@ -339,6 +383,7 @@ def get_dashboard_data():
                 "home_edge": edge,
                 "match_time": match.get("commence_time", "TBA"),
                 "league": match.get("sport_title", "PREMIER LEAGUE"),
+                "is_reliable": match.get("is_reliable", True)
             }
             dashboard_data.append(match_obj)
 
