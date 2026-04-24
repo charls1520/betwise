@@ -90,7 +90,7 @@ def train_and_save_models(df: pd.DataFrame, model_dir: str = "models"):
     return models
 
 
-if __name__ == "__main__":
+def run_weekly_training():
     from src.rag.config import init_llama_index
     init_llama_index()
 
@@ -99,16 +99,20 @@ if __name__ == "__main__":
 
     logger = get_logger()
 
-    logger.info("Downloading historical data...")
+    logger.info("Starting weekly ML continuous training...")
+    logger.info("Downloading historical/live data...")
     raw_df = download_football_data_co_uk()
 
     if not raw_df.empty:
-        logger.info(f"Downloaded {len(raw_df)} historical matches.")
+        logger.info(f"Downloaded {len(raw_df)} historical/live matches.")
         logger.info("Engineering features...")
         df_features = build_features_for_matches(raw_df.to_dict("records"))
 
         logger.info("Training models...")
         train_and_save_models(df_features)
-        logger.info("Models trained and saved successfully.")
+        logger.info("Continuous models trained and saved successfully.")
     else:
-        logger.error("Failed to download historical data.")
+        logger.error("Failed to download historical data. Aborting training.")
+
+if __name__ == "__main__":
+    run_weekly_training()

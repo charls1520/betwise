@@ -36,3 +36,20 @@ def test_train_and_save_models_with_imputation(mock_acc, tmp_path):
     models = train_and_save_models(df, model_dir=str(tmp_path))
     assert "winner_model" in models
     assert "goals_model" in models
+
+from src.ml.train import run_weekly_training
+
+@patch("src.ml.train.train_and_save_models")
+@patch("src.ml.train.build_features_for_matches")
+@patch("src.ingestion.historical.download_football_data_co_uk")
+@patch("src.rag.config.init_llama_index")
+def test_run_weekly_training(mock_init_llama, mock_download, mock_build, mock_train):
+    mock_download.return_value = pd.DataFrame([{"dummy": "data"}])
+    mock_build.return_value = pd.DataFrame([{"feat": 1}])
+    
+    run_weekly_training()
+    
+    mock_init_llama.assert_called_once()
+    mock_download.assert_called_once()
+    mock_build.assert_called_once()
+    mock_train.assert_called_once()
