@@ -35,7 +35,7 @@ def fetch_with_retry(url: str) -> str:
 
 from src.ingestion.config import LEAGUES_CONFIG
 
-def download_football_data_co_uk(seasons: list = ["2324", "2223", "2122"]) -> pd.DataFrame:
+def download_football_data_co_uk(seasons: list = ["2526", "2425", "2324", "2223", "2122"]) -> pd.DataFrame:
     base_url = "https://www.football-data.co.uk/mmz4281/{}/{}.csv"
     cache_dir = "data/historical"
     cache_file = os.path.join(cache_dir, "merged_history_cache.csv")
@@ -55,6 +55,8 @@ def download_football_data_co_uk(seasons: list = ["2324", "2223", "2122"]) -> pd
     dfs_to_append = []
     
     season_to_year = {
+        "2526": "2025",
+        "2425": "2024",
         "2324": "2023",
         "2223": "2022",
         "2122": "2021",
