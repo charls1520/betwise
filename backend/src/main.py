@@ -1,25 +1,28 @@
+import os
+import glob
+import json
+import re
+import time
+import datetime
+import zoneinfo
+from dotenv import load_dotenv
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from typing import List, Optional
+from contextlib import asynccontextmanager
+
 from src.ml.inference import predict_matches
 from src.ml.reliability import calculate_value_edge, meets_data_threshold
-from src.ingestion.scrapers.odds_api import fetch_premier_league_odds
-from src.ingestion.scrapers.understat import fetch_current_xg_stats
 from src.ingestion.normalizer import TeamNormalizer
 from src.rag.config import init_llama_index
 from src.rag.pipeline import build_index, query_index
 from llama_index.core import Document
-
-import os
-import glob
-import json
-from dotenv import load_dotenv
+from src.ingestion.scheduler import start_scheduler
+from src.utils.logger import get_logger
 
 load_dotenv()
-
-from contextlib import asynccontextmanager
-from src.ingestion.scheduler import start_scheduler
+logger = get_logger()
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -41,11 +44,12 @@ def load_real_documents():
         # Look for news json files
         news_files = glob.glob(f"{raw_dir}/**/news_*.json", recursive=True)
         for fpath in news_files:
+            date_str = fpath.split(os.sep)[-2] if os.sep in fpath else fpath.split('/')[-2]
             with open(fpath, "r", encoding="utf-8") as f:
                 try:
                     data = json.load(f)
                     for article in data.get("articles", []):
-                        text = f"News Title: {article.get('title')}\nSummary: {article.get('summary')}"
+                        text = f"Noticia [Publicada el {date_str}]: {article.get('title')}\nResumen: {article.get('summary')}"
                         docs.append(Document(text=text, metadata={"source": "bbc_news"}))
                 except Exception:
                     pass
@@ -53,11 +57,13 @@ def load_real_documents():
         # Look for odds json files
         odds_files = glob.glob(f"{raw_dir}/**/odds_*.json", recursive=True)
         for fpath in odds_files:
+            date_str = fpath.split(os.sep)[-2] if os.sep in fpath else fpath.split('/')[-2]
             with open(fpath, "r", encoding="utf-8") as f:
                 try:
                     data = json.load(f)
                     for match in data.get("matches", []):
-                        text = f"Match: {match.get('home_team')} vs {match.get('away_team')}"
+                        commence = match.get('commence_time', 'Unknown')
+                        text = f"Partido [Generado el {date_str}]: {match.get('home_team')} vs {match.get('away_team')} a jugarse el {commence}."
                         docs.append(Document(text=text, metadata={"source": "odds"}))
                 except Exception:
                     pass
@@ -68,11 +74,11 @@ def load_real_documents():
 
 
 try:
-    print("Building RAG index from real data...")
+    logger.info("Building RAG index from real data...")
     global_index = build_index(load_real_documents())
-    print("RAG index built successfully.")
+    logger.info("RAG index built successfully.")
 except Exception as e:
-    print(f"Failed to build RAG index: {e}")
+    logger.error(f"Failed to build RAG index: {e}")
     global_index = None
 
 app.add_middleware(
@@ -128,6 +134,13 @@ def get_latest_ml_suggestions() -> list:
             with open(latest_xg, "r", encoding="utf-8") as f:
                 xg_stats = json.load(f)
 
+        elo_stats = {}
+        elo_files = glob.glob(f"{raw_dir}/**/elo_*.json", recursive=True)
+        if elo_files:
+            latest_elo = sorted(elo_files, key=os.path.getmtime)[-1]
+            with open(latest_elo, "r", encoding="utf-8") as f:
+                elo_stats = json.load(f).get("stats", {})
+
         canonical_teams = list(xg_stats.keys()) if xg_stats else []
         normalizer = TeamNormalizer(canonical_teams)
 
@@ -139,6 +152,8 @@ def get_latest_ml_suggestions() -> list:
             if home_norm and home_norm in xg_stats and away_norm and away_norm in xg_stats:
                 match["home_xg"] = xg_stats[home_norm].get("xg_for_avg")
                 match["away_xg"] = xg_stats[away_norm].get("xg_for_avg")
+                match["home_elo"] = elo_stats.get(home_norm, elo_stats.get(match.get("home_team"), 1500.0))
+                match["away_elo"] = elo_stats.get(away_norm, elo_stats.get(match.get("away_team"), 1500.0))
                 valid_odds.append(match)
 
         if not valid_odds:
@@ -172,74 +187,69 @@ def get_latest_ml_suggestions() -> list:
             
         return suggestions
     except Exception as e:
-        print(f"Error in ML suggestions: {e}")
+        logger.error(f"Error in ML suggestions: {e}")
         return []
 
-import re
 
 @app.post("/api/chat", response_model=ChatResponse)
 def chat_with_bot(request: ChatRequest):
     if not global_index:
-        return ChatResponse(response="RAG Index not initialized.", sources=[])
+        return ChatResponse(response="RAG Index no inicializado.", sources=[])
 
     try:
         import src.rag.pipeline as pipeline
         
-        # 1. Normalize User Input
-        raw_dir = "data/raw"
-        xg_stats = {}
-        xg_files = glob.glob(f"{raw_dir}/**/xg_*.json", recursive=True)
-        if xg_files:
-            latest_xg = sorted(xg_files, key=os.path.getmtime)[-1]
-            with open(latest_xg, "r", encoding="utf-8") as f:
-                xg_stats = json.load(f)
-
-        canonical_teams = list(xg_stats.keys()) if xg_stats else []
-        normalizer = TeamNormalizer(canonical_teams)
+        # 1. Date Context
+        tz = zoneinfo.ZoneInfo("America/Bogota")
+        now_utc5 = datetime.datetime.now(tz).strftime("%Y-%m-%d %H:%M:%S UTC-5")
         
-        user_msg = request.message
-        normalized_context = "Ningún alias detectado."
+        # 2. Load latest dashboard data
+        dashboard_data = get_dashboard_data()
+        matches = dashboard_data.get("matches", [])
+        suggestions = dashboard_data.get("suggestions", [])
         
-        # Simple heuristic: Look for capitalized words as potential teams
-        potential_teams = re.findall(r'\b[A-Z][a-z]+(?:\s+[A-Z][a-z]+)*\b', user_msg)
-        for pt in potential_teams:
-            if len(pt) > 3:
-                norm = normalizer.normalize(pt)
-                if norm and norm != pt:
-                    normalized_context = f"El usuario mencionó '{pt}', refiriéndose a '{norm}'."
-
-        # 2. Get ML Suggestions
-        suggestions = get_latest_ml_suggestions()
-        ml_text = "Sin datos de predicción disponibles hoy."
+        upcoming_matches_text = "Partidos de las próximas 48 horas:\n"
+        if matches and not (len(matches) > 0 and matches[0].get("error")):
+            for m in matches:
+                upcoming_matches_text += f"- {m.get('league', 'Desconocida')} | {m.get('home_team')} vs {m.get('away_team')} (Hora: {m.get('match_time')}) | Cuota Local: {m.get('home_odds')} | Prob. ML Local: {m.get('prob_home_win', 0)*100:.1f}%\n"
+        else:
+            upcoming_matches_text += "No hay partidos programados en las próximas 48 horas o hubo un error.\n"
+            
+        ml_text = "Apuestas de Valor Sugeridas (Edge > 10%):\n"
         if suggestions:
-            ml_text = "Predicciones Matemáticas (Value Edge):\n"
             for s in suggestions:
-                ml_text += f"- {s['match']}: Prob. Local {s['prob_home']}, Cuota {s['odds']}, Edge: {s['edge']}\n"
-
+                ml_text += f"- {s['match']} | Confianza {s['confidence']} | Cuota {s['odds']} | Edge: {s['edge']}\n"
+        else:
+            ml_text += "Ninguna apuesta matemática supera el umbral de valor del 10% hoy.\n"
+        
         # 3. Build Super Prompt
-        prompt = f"""Actúas como un experto asesor de apuestas de la Premier League.
-Tienes la siguiente información matemática proveniente de nuestro modelo de Machine Learning:
-{ml_text}
+        prompt = f"""Actúas como un experto asesor de apuestas deportivas (Fútbol Europeo).
+Hoy es la siguiente fecha y hora: {now_utc5}
 
-[Contexto Auto-Ajustado del usuario]: {normalized_context}
+Tienes acceso COMPLETO a tu memoria (base de datos RAG) para ver el historial y contexto de noticias, pero TAMBIÉN tienes la siguiente información en tiempo real de los partidos que SÍ se jugarán en las próximas 48 horas, proveniente de nuestro modelo predictivo:
+
+{upcoming_matches_text}
+
+{ml_text}
 
 Pregunta del usuario: {request.message}
 
-Usa el contexto matemático anterior y las noticias de tu base de datos para dar recomendaciones sólidas, explicando SIEMPRE el "Value Edge" o la probabilidad matemática. No inventes partidos ni cuotas.
+INSTRUCCIONES CRÍTICAS:
+1. Responde a la pregunta del usuario considerando la FECHA DE HOY.
+2. Si el usuario pide sugerencias de apuestas para los "próximos partidos" o "hoy/mañana", recomiéndale basado ÚNICAMENTE en la lista de "Partidos de las próximas 48 horas" y las "Apuestas de Valor Sugeridas".
+3. Si el usuario menciona un partido que NO está en la lista de próximas 48 horas (por ejemplo "Barcelona vs Celta Vigo" y no está arriba), infórmale amablemente que ese partido no se juega en las próximas 48 horas o que es un partido del pasado (puedes buscar su resultado/noticias en tu memoria RAG si te pregunta contexto, pero NO inventes cuotas).
+4. Explica siempre el "Value Edge" (margen de valor matemático). No inventes cuotas o partidos falsos.
 """
         answer = pipeline.query_index(global_index, prompt)
         
         return ChatResponse(
             response=str(answer),
             sources=[
-                SourceModel(type="news", title="RAG Context", snippet="Queried local DB and ML Engine")
+                SourceModel(type="news", title="RAG & Dashboard Context", snippet="Queried local DB and ML Engine")
             ],
         )
     except Exception as e:
         return ChatResponse(response=f"Error querying RAG: {e}", sources=[])
-
-
-from src.ml.reliability import calculate_value_edge, meets_data_threshold
 
 
 @app.get("/api/dashboard")
@@ -267,6 +277,13 @@ def get_dashboard_data():
             latest_xg = sorted(xg_files, key=os.path.getmtime)[-1]
             with open(latest_xg, "r", encoding="utf-8") as f:
                 xg_stats = json.load(f)
+                
+        elo_stats = {}
+        elo_files = glob.glob(f"{raw_dir}/**/elo_*.json", recursive=True)
+        if elo_files:
+            latest_elo = sorted(elo_files, key=os.path.getmtime)[-1]
+            with open(latest_elo, "r", encoding="utf-8") as f:
+                elo_stats = json.load(f).get("stats", {})
 
         canonical_teams = list(xg_stats.keys()) if xg_stats else []
         normalizer = TeamNormalizer(canonical_teams)
@@ -280,6 +297,11 @@ def get_dashboard_data():
             if home_norm and home_norm in xg_stats and away_norm and away_norm in xg_stats:
                 match["home_xg"] = xg_stats[home_norm].get("xg_for_avg")
                 match["away_xg"] = xg_stats[away_norm].get("xg_for_avg")
+                
+                # Add Elo ratings if available, default to average 1500 if missing
+                match["home_elo"] = elo_stats.get(home_norm, elo_stats.get(match.get("home_team"), 1500.0))
+                match["away_elo"] = elo_stats.get(away_norm, elo_stats.get(match.get("away_team"), 1500.0))
+                
                 valid_odds.append(match)
 
         # 4. Run ML Inference
@@ -335,11 +357,11 @@ def get_dashboard_data():
 
         return {"matches": dashboard_data, "suggestions": suggestions}
     except Exception as e:
+        logger.error(f"Dashboard Error: {e}")
         return [{"error": str(e)}]
 
 
-import time
-
+from src.utils.audit_logger import get_unmatched_teams
 
 @app.get("/api/health/audit")
 def get_audit_log():
@@ -375,13 +397,20 @@ def get_audit_log():
         "normalization_warnings": [],  # Would be populated from a DB log in production
     }
 
+    # 4. Audit Anomalies
+    audit_status = {
+        "unmatched_teams": get_unmatched_teams()
+    }
+
     return {
         "rag_engine": rag_status,
         "ml_engine": ml_status,
         "ingestion_engine": ingestion_status,
+        "data_audit": audit_status,
     }
 
 
 @app.get("/")
 def read_root():
     return {"status": "ok", "message": "BetWise API is running"}
+
