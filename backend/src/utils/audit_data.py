@@ -1,6 +1,9 @@
 import os
 import json
 import pandas as pd
+from src.utils.logger import get_logger
+
+logger = get_logger()
 
 def audit_data_lake(base_dir: str = "data/raw") -> dict:
     metrics = {
@@ -80,7 +83,7 @@ def audit_historical_cache(filepath: str = "data/historical/merged_history_cache
             metrics["zero_elo"] = int(zero_h_elo + zero_a_elo)
             
     except Exception as e:
-        print(f"Error reading historical cache: {e}")
+        logger.error(f"Error reading historical cache: {e}")
         
     return metrics
 
@@ -89,16 +92,15 @@ from datetime import datetime, timezone
 def audit_databases(db_path: str = "test.db", chroma_path: str = "data/chromadb") -> dict:
     metrics = {"teams_count": 0, "chroma_size_mb": 0.0}
     
-    if os.path.exists(db_path):
-        import sqlite3
-        try:
-            conn = sqlite3.connect(db_path)
-            cursor = conn.cursor()
-            cursor.execute("SELECT COUNT(*) FROM teams")
-            metrics["teams_count"] = cursor.fetchone()[0]
-            conn.close()
-        except Exception:
-            pass
+    from sqlalchemy import create_engine, text
+    db_url = os.environ.get("DATABASE_URL", f"sqlite:///{db_path}")
+    try:
+        engine = create_engine(db_url)
+        with engine.connect() as conn:
+            result = conn.execute(text("SELECT COUNT(*) FROM teams"))
+            metrics["teams_count"] = result.scalar()
+    except Exception as e:
+        logger.error(f"Database connection error: {e}")
 
     if os.path.exists(chroma_path):
         total_bytes = sum(os.path.getsize(os.path.join(dirpath, filename)) 
@@ -150,15 +152,15 @@ def generate_audit_report():
 - **ChromaDB Size:** {db_metrics['chroma_size_mb']} MB
 """
     
-    os.makedirs("../docs/audits", exist_ok=True)
-    filename = f"../docs/audits/{datetime.now(timezone.utc).strftime('%Y-%m-%d')}-data-health-report.md"
+    os.makedirs("data/audits", exist_ok=True)
+    filename = f"data/audits/{datetime.now(timezone.utc).strftime('%Y-%m-%d')}-data-health-report.md"
     
     with open(filename, "w", encoding="utf-8") as f:
         f.write(report)
         
-    print(f"Audit complete. Report saved to {filename}")
+    logger.info(f"Audit complete. Report saved to {filename}")
     if red_alerts:
-        print("WARNING: Red alerts detected. Check the report.")
+        logger.warning("Red alerts detected. Check the report.")
 
 if __name__ == "__main__":
     generate_audit_report()
