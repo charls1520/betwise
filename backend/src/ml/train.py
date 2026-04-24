@@ -101,7 +101,8 @@ def run_weekly_training():
 
     logger.info("Starting weekly ML continuous training...")
     logger.info("Downloading historical/live data...")
-    raw_df = download_football_data_co_uk()
+    # Solo buscamos actualizaciones de las temporadas en curso para evitar procesar errores viejos
+    raw_df = download_football_data_co_uk(seasons=["2526", "2425"])
 
     if not raw_df.empty:
         logger.info(f"Downloaded {len(raw_df)} historical/live matches.")
