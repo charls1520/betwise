@@ -201,11 +201,11 @@ BetWise es un asistente web de apuestas deportivas enfocado en la Premier League
 - [x] Añadir validación y umbrales de regresión al entrenamiento ML
 - [x] Implementar Short Polling en el Frontend para actualizaciones en tiempo real
 
-### 30. Entrenamiento de ML Continuo con Data Lake (Pendiente)
-- [ ] Brainstorming y Diseño de la Integración
-- [ ] Modificar pipeline de ML (`train.py`) para leer partidos finalizados desde el Data Lake (`data/raw/`)
-- [ ] Concatenar data histórica (`merged_history_cache.csv`) con datos recientes de la temporada en curso
-- [ ] Actualizar el orquestador de ingesta para automatizar el re-entrenamiento con toda la información disponible
+### 30. Entrenamiento de ML Continuo con Data Lake (Completo)
+- [x] Brainstorming y Diseño de la Integración
+- [x] Modificar pipeline de ML (`train.py`) para leer partidos finalizados desde el Data Lake (`data/raw/`)
+- [x] Concatenar data histórica (`merged_history_cache.csv`) con datos recientes de la temporada en curso
+- [x] Actualizar el orquestador de ingesta para automatizar el re-entrenamiento con toda la información disponible
 
 ---
 
