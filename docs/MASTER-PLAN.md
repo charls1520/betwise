@@ -226,6 +226,13 @@ BetWise es un asistente web de apuestas deportivas enfocado en la Premier League
 - [ ] Implementar `TelegramNotifier` con formateo de mensajes
 - [ ] Integrar Notificador en orquestador de ingesta diaria
 
+### 34. Despliegue en VPS con Dokploy (En progreso)
+- [x] Brainstorming y Diseño de Despliegue
+- [x] Plan de Implementación de Archivos de Configuración
+- [ ] Crear Dockerfiles de Producción
+- [ ] Crear docker-compose.prod.yml
+- [ ] Documentar Guía de Despliegue
+
 ---
 
 ## Próximos pasos
