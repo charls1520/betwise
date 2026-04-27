@@ -21,6 +21,10 @@ def test_real_chat_endpoint(monkeypatch):
     )
     # Mock LLM calls inside normalizer to avoid hanging during tests
     monkeypatch.setattr("src.ingestion.normalizer.TeamNormalizer._ask_llm", lambda self, name: None)
+    
+    # Mock global_index to not be None
+    import src.main
+    monkeypatch.setattr(src.main, "global_index", "dummy_index")
 
     response = client.post(
         "/api/chat", json={"message": "Injury update?", "match_id": 1}
@@ -40,11 +44,20 @@ def test_dashboard_endpoint(monkeypatch):
 
 
 def test_app_startup_initializes_rag(monkeypatch):
-    # This is a bit tricky to test directly without starting the server,
-    # but we can verify the global_index is not None or dummy.
-    from src.main import global_index
-
-    assert global_index is not None
+    import src.main
+    mock_called = False
+    
+    def mock_build_index_sync():
+        nonlocal mock_called
+        mock_called = True
+        
+    monkeypatch.setattr(src.main, "_build_index_sync", mock_build_index_sync)
+    
+    with TestClient(app) as test_client:
+        import time
+        time.sleep(0.1)  # allow background executor to run
+        
+    assert mock_called is True
 
 
 def test_audit_endpoint():
