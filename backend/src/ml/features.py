@@ -192,8 +192,6 @@ def build_features_for_matches(matches: list) -> pd.DataFrame:
     # Target Variables
     if "FTR" in df.columns:
         df["target_1x2"] = df["FTR"].map({"H": 1, "D": 0, "A": 2})
-    if "FTHG" in df.columns and "FTAG" in df.columns:
-        df["target_over25"] = ((df["FTHG"] + df["FTAG"]) > 2.5).astype(int)
 
     # Market Intelligence (Implied Probabilities Diff)
     # Historic uses B365H/A, Inference uses home_odds/away_odds
@@ -209,5 +207,22 @@ def build_features_for_matches(matches: list) -> pd.DataFrame:
         df['market_implied_diff'] = df['market_implied_diff'].fillna(0)
     else:
         df['market_implied_diff'] = 0
+
+    # Drop intermediate and unneeded base columns
+    cols_to_drop = [
+        'home_rest_days', 'away_rest_days',
+        'home_avg_shots_on_target', 'away_avg_shots_on_target',
+        'home_end_of_season', 'away_end_of_season',
+        'home_avg_goals_scored_general', 'away_avg_goals_scored_general',
+        'home_avg_goals_conceded_general', 'away_avg_goals_conceded_general',
+        'home_avg_goals_scored_home', 'away_avg_goals_scored_home',
+        'home_avg_goals_conceded_home', 'away_avg_goals_conceded_home',
+        'home_avg_goals_scored_away', 'away_avg_goals_scored_away',
+        'home_avg_goals_conceded_away', 'away_avg_goals_conceded_away',
+        'home_offensive_efficiency', 'away_offensive_efficiency',
+        'home_defensive_efficiency', 'away_defensive_efficiency',
+        'home_implied_prob', 'away_implied_prob'
+    ]
+    df = df.drop(columns=[col for col in cols_to_drop if col in df.columns], errors='ignore')
 
     return df

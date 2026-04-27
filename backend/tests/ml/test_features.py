@@ -33,7 +33,13 @@ def test_build_features_for_matches():
     assert not df.empty
     assert "xg_diff" not in df.columns
     assert "target_1x2" in df.columns
-    assert "target_over25" in df.columns
+    
+    # Check target_over25 is removed
+    assert "target_over25" not in df.columns
+    # Check intermediate columns are dropped
+    assert "home_rest_days" not in df.columns
+    assert "away_rest_days" not in df.columns
+    assert "home_avg_shots_on_target" not in df.columns
 
 
 def test_build_features_from_historical():
@@ -100,9 +106,8 @@ def test_false_fatigue_and_stats_cold_start():
     ]
     df = build_features_for_matches(matches)
     
-    # First match ever should have 10 rest days
-    assert df.loc[0, "home_rest_days"] == 10.0
-    assert df.loc[0, "away_rest_days"] == 10.0
+    # First match ever should have 0 rest days diff (10 - 10)
+    assert df.loc[0, "rest_days_diff"] == 0.0
 
 def test_new_ml_features():
     data = [
@@ -118,16 +123,14 @@ def test_new_ml_features():
         
     df = build_features_for_matches(data)
     
-    assert "home_rest_days" in df.columns
-    assert "away_rest_days" in df.columns
     assert "rest_days_diff" in df.columns
     assert "shots_on_target_diff" in df.columns
     assert "is_end_of_season" in df.columns
     
     # Verificamos que no haya leakage y el capping funcione
     # El partido del 2023-01-20 de TeamA fue 15 dias despues del 2023-01-05. El cap es 10.
-    # En el index 2, TeamA es local. Su descanso deberia ser 10.
-    assert df.loc[2, "home_rest_days"] == 10.0
+    # En el index 2, TeamA es local (descanso 10), TeamD no tiene historial (descanso 10). diff = 0
+    assert df.loc[2, "rest_days_diff"] == 0.0
     
     # El ultimo partido debe tener is_end_of_season en 1
     assert df.iloc[-1]["is_end_of_season"] == 1
