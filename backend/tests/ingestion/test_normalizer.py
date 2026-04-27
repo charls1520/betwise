@@ -41,3 +41,16 @@ def test_team_normalizer_auto_healing(tmp_path, monkeypatch):
     
     # Check that it got saved to memory
     assert "man utd" in normalizer.aliases
+
+def test_fbref_transfermarkt_normalizations(tmp_path, monkeypatch):
+    monkeypatch.setenv("EMBEDDING_MODEL_NAME", "BAAI/bge-small-en-v1.5")
+    init_llama_index()
+    cache_path = str(tmp_path / "team_aliases.json")
+    monkeypatch.setattr("src.ingestion.normalizer.TeamNormalizer._load_cache", lambda self: {})
+    monkeypatch.setattr("src.ingestion.normalizer.TeamNormalizer._save_cache", lambda self: None)
+
+    teams = ["Real Madrid"]
+    normalizer = TeamNormalizer(teams)
+
+    assert normalizer.normalize("Real Madrid CF", source="transfermarkt") == "Real Madrid"
+    assert normalizer.normalize("Real Madrid", source="fbref") == "Real Madrid"

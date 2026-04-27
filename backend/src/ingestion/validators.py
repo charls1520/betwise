@@ -26,7 +26,7 @@ class EloScore(BaseModel):
 def validate_volume(current_count: int, expected_minimum: int = 1) -> bool:
     """Heuristic check: Ensure we didn't scrape 0 or abnormally few items."""
     if current_count < expected_minimum:
-        logger.error(f"Validation Error: Extracted {current_count} items, expected at least {expected_minimum}.")
+        logger.warning(f"Validation Warning: Extracted {current_count} items, expected at least {expected_minimum}.")
         return False
     return True
 

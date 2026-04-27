@@ -226,3 +226,13 @@ def build_features_for_matches(matches: list) -> pd.DataFrame:
     df = df.drop(columns=[col for col in cols_to_drop if col in df.columns], errors='ignore')
 
     return df
+
+def add_rolling_possession(df: pd.DataFrame, window: int = 5) -> pd.DataFrame:
+    df = df.copy()
+    if 'possession_percentage' not in df.columns:
+        return df
+        
+    df[f'rolling_possession_{window}'] = df.groupby('team_id')['possession_percentage'].transform(
+        lambda x: x.rolling(window=window, min_periods=1).mean()
+    )
+    return df

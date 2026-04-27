@@ -21,3 +21,16 @@ def query_index(index: VectorStoreIndex, query_text: str) -> str:
     """Queries the index using the globally configured LLM (Ollama)."""
     query_engine = index.as_query_engine()
     return resilient_query_llm(query_engine, query_text)
+
+def build_match_context(match_info: dict, derby_info: str = None, absences: list = None) -> str:
+    context = f"Match: {match_info.get('team1')} vs {match_info.get('team2')}\n"
+    
+    if derby_info:
+        context += f"¡ALERTA DE DERBI!: Este partido es '{derby_info}'.\n"
+        
+    if absences:
+        context += "Ausencias Claves:\n"
+        for abs in absences:
+            context += f"- {abs['player']} ({abs['reason']})\n"
+            
+    return context

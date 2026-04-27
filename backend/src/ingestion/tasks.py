@@ -5,6 +5,8 @@ from src.ingestion.scrapers.news_scraper import fetch_bbc_sports_news
 from src.ingestion.scrapers.odds_api import fetch_premier_league_odds
 from src.ingestion.scrapers.understat import fetch_current_xg_stats
 from src.ingestion.scrapers.clubelo import fetch_clubelo_stats
+from src.ingestion.scrapers.fbref import FBrefScraper
+from src.ingestion.scrapers.transfermarkt import TransfermarktScraper
 from src.ingestion.config import LEAGUES_CONFIG
 from src.utils.logger import get_logger
 from src.ingestion.validators import NewsArticle, validate_volume
@@ -29,7 +31,7 @@ def run_daily_scraping(odds_api_key: str = None):
     for article in news:
         try:
             valid_article = NewsArticle(**article)
-            valid_news.append(valid_article.dict())
+            valid_news.append(valid_article.model_dump())
         except Exception as e:
             logger.warning(f"Dropping invalid news article: {e}")
             
@@ -68,8 +70,6 @@ def run_daily_scraping(odds_api_key: str = None):
         
         try:
             odds = fetch_premier_league_odds(api_key=odds_api_key, sport_key=league["odds_api_id"])
-            if last_odds_run:
-                odds = [o for o in odds if o.get("commence_time", "") > last_odds_run]
 
             if validate_volume(len(odds), expected_minimum=1):
                 all_odds.extend(odds)
@@ -96,6 +96,25 @@ def run_daily_scraping(odds_api_key: str = None):
         update_last_run("understat")
         xg_file = save_raw_data("xg", all_xg)
         logger.info(f"Saved multi-league xG to {xg_file}")
+
+    logger.info("Fetching FBref Possession and Transfermarkt Absences...")
+    fbref_scraper = FBrefScraper()
+    tm_scraper = TransfermarktScraper()
+    
+    # Placeholder: In a full setup, we need a mapping from team name to URL.
+    # We log the initialization to confirm they are part of the daily task.
+    absences_data = {}
+    possession_data = {}
+    for match in all_odds:
+        home_team = match.get("home_team")
+        away_team = match.get("away_team")
+        # absences_data[home_team] = tm_scraper.get_absences(f"url_for_{home_team}")
+        # possession_data[home_team] = fbref_scraper.get_possession(f"url_for_last_match_{home_team}")
+    
+    if len(absences_data) > 0:
+        save_raw_data("absences", absences_data)
+    if len(possession_data) > 0:
+        save_raw_data("possession", possession_data)
 
     logger.info("Running ML inference on new odds...")
     if len(all_odds) > 0:

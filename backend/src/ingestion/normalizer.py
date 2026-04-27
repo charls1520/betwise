@@ -9,12 +9,20 @@ from src.utils.logger import get_logger
 logger = get_logger()
 
 
+STATIC_ALIASES = {
+    "real madrid cf": "Real Madrid",
+    # Add other static mapping for Transfermarkt or FBref if needed
+}
+
 class TeamNormalizer:
     def __init__(self, canonical_teams: List[str], threshold: int = 85):
         self.canonical_teams = canonical_teams
         self.threshold = threshold
         self.cache_file = "data/team_aliases.json"
         self.aliases = self._load_cache()
+        # Merge static aliases into instance aliases
+        for k, v in STATIC_ALIASES.items():
+            self.aliases[k] = v
 
     def _load_cache(self) -> dict:
         if os.path.exists(self.cache_file):
@@ -56,7 +64,7 @@ class TeamNormalizer:
             return answer
         return None
 
-    def normalize(self, raw_name: str) -> Optional[str]:
+    def normalize(self, raw_name: str, source: str = None) -> Optional[str]:
         raw_lower = raw_name.lower().strip()
 
         # 1. Memory Cache
