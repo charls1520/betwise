@@ -17,7 +17,7 @@ BetWise es un asistente de apuestas deportivas híbrido para la Premier League. 
 - **UI & Dashboard**: Interfaz dinámica con paneles laterales colapsables, visualización de nombres completos de equipos, ligas dinámicas, y hora del partido ajustada a zona horaria local (UTC-5).
 - **Motor de Ingesta (Data Lake -> ETL)**: Pipeline que permite guardar datos crudos en JSON y normalizar los nombres de los equipos con `thefuzz` antes de pasarlos a la base de datos relacional.
 - **Motor RAG (LlamaIndex)**: Integración local de LlamaIndex con embeddings de HuggingFace, base de datos vectorial ChromaDB y LLM Ollama para responder consultas sobre contexto no estructurado.
-- **Motor de Machine Learning**: Modelos estadísticos independientes (`scikit-learn`) para predecir probabilidades en mercados de Ganador (1X2) y Goles Totales (Over/Under) en base a Goles Esperados (xG), Elo, métricas de fatiga (días de descanso), estadísticas recientes de tiro (tiros a puerta), e indicadores de fin de temporada.
+- **Motor de Machine Learning**: Modelos estadísticos independientes para predecir probabilidades en mercados de Ganador (1X2) usando `RandomForestClassifier` y Goles (Over/Under) derivando la distribución de Poisson sobre las predicciones de goles esperados (`XGBoostRegressor`). El modelo utiliza Goles Esperados (xG), Elo, métricas de fatiga, promedios móviles de goles (general, local y visitante) y estadísticas recientes de tiro.
 - **Notificador Telegram**: Sistema de alertas integradas al pipeline diario que envía de forma individual todos los pronósticos procesados (incluyendo alerta verde para predicciones con `Value Edge`) a un canal privado, garantizando rate limits y retry handling robustos.
 
 ---

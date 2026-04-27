@@ -3,8 +3,10 @@ import pandas as pd
 from unittest.mock import patch
 from src.ml.train import train_and_save_models
 
+@patch("src.ml.train.mean_squared_error", return_value=1.0)
+@patch("src.ml.train.mean_absolute_error", return_value=1.0)
 @patch("src.ml.train.accuracy_score", return_value=1.0)
-def test_train_and_save_models(mock_acc, tmp_path):
+def test_train_and_save_models(mock_acc, mock_mae, mock_mse, tmp_path):
     # Dummy data
     df = pd.DataFrame(
         {
@@ -13,8 +15,11 @@ def test_train_and_save_models(mock_acc, tmp_path):
             "rest_days_diff": [0, 1, -1, 0, 2, -2, 0, 1, -1, 0, 2, -2],
             "shots_on_target_diff": [2.0, -1.0, 0.5, 3.0, -2.0, 0.0, 2.0, -1.0, 0.5, 3.0, -2.0, 0.0],
             "is_end_of_season": [0, 0, 1, 0, 1, 0, 0, 0, 1, 0, 1, 0],
+            "goals_scored_general_diff": [0.5, -0.5, 0.2, 1.0, -1.0, 0.0, 0.5, -0.5, 0.2, 1.0, -1.0, 0.0],
+            "goals_conceded_general_diff": [0.2, 0.1, -0.2, -0.5, 1.0, 0.0, 0.2, 0.1, -0.2, -0.5, 1.0, 0.0],
             "target_1x2": [2, 0, 1, 2, 0, 1, 2, 0, 1, 2, 0, 1],
-            "target_over25": [1, 0, 0, 1, 1, 0, 1, 0, 0, 1, 1, 0],
+            "FTHG": [2, 0, 1, 3, 0, 1, 2, 0, 1, 3, 0, 1],
+            "FTAG": [1, 0, 0, 1, 2, 1, 1, 0, 0, 1, 2, 1],
         }
     )
 
@@ -22,26 +27,34 @@ def test_train_and_save_models(mock_acc, tmp_path):
     models = train_and_save_models(df, model_dir)
 
     assert "winner_model" in models
-    assert "goals_model" in models
+    assert "home_goals_model" in models
+    assert "away_goals_model" in models
     assert os.path.exists(os.path.join(model_dir, "winner_model.joblib"))
-    assert os.path.exists(os.path.join(model_dir, "goals_model.joblib"))
+    assert os.path.exists(os.path.join(model_dir, "home_goals_model.joblib"))
+    assert os.path.exists(os.path.join(model_dir, "away_goals_model.joblib"))
 
+@patch("src.ml.train.mean_squared_error", return_value=1.0)
+@patch("src.ml.train.mean_absolute_error", return_value=1.0)
 @patch("src.ml.train.accuracy_score", return_value=1.0)
-def test_train_and_save_models_with_imputation(mock_acc, tmp_path):
+def test_train_and_save_models_with_imputation(mock_acc, mock_mae, mock_mse, tmp_path):
     df = pd.DataFrame({
         "xg_diff": [1.0, -0.5, None, 2.0, 1.0, -0.5, None, 2.0, 1.0, -0.5],
         "elo_diff": [100, -50, 20, None, 100, -50, 20, None, 100, -50],
         "rest_days_diff": [1, -1, None, 0, 2, -2, None, 0, 1, -1],
         "shots_on_target_diff": [1.5, -0.5, None, 2.0, 1.0, -1.0, None, 1.5, 0.5, -0.5],
         "is_end_of_season": [0, 1, 0, 1, 0, 0, 1, 0, 1, 0],
+        "goals_scored_general_diff": [0.5, -0.5, None, 1.0, -1.0, 0.0, None, -0.5, 0.2, 1.0],
+        "goals_conceded_general_diff": [0.2, 0.1, None, -0.5, 1.0, 0.0, None, 0.1, -0.2, -0.5],
         "target_1x2": [1, 2, 0, 1, 1, 2, 0, 1, 1, 2],
-        "target_over25": [1, 0, 1, 1, 0, 1, 0, 1, 1, 0]
+        "FTHG": [2, 0, 1, 3, 0, 1, 2, 0, 1, 3],
+        "FTAG": [1, 0, 0, 1, 2, 1, 1, 0, 0, 1],
     })
     
     # Train should handle NaNs by dropping or imputing internally
     models = train_and_save_models(df, model_dir=str(tmp_path))
     assert "winner_model" in models
-    assert "goals_model" in models
+    assert "home_goals_model" in models
+    assert "away_goals_model" in models
 
 from src.ml.train import run_weekly_training
 

@@ -232,6 +232,12 @@ BetWise es un asistente web de apuestas deportivas enfocado en la Premier League
 - [x] Actualizar pipeline de entrenamiento e inferencia con nuevas variables
 - [x] Ejecutar y validar tests unitarios
 
+### 35. Mejoras Predictivas de Goles con XGBoost - Fase B (Completo)
+- [x] Brainstorming y Diseño de modelos de regresión para goles
+- [x] Añadir feature engineering para promedios móviles de goles (general, local, visitante)
+- [x] Reemplazar modelo logístico de clasificación por regresores `XGBoost` separados para FTHG y FTAG
+- [x] Implementar cálculo de probabilidad Poisson para Over/Under 2.5 en inferencia
+
 ---
 
 ## Próximos pasos
