@@ -1,14 +1,0 @@
-Loading weights:   0%|          | 0/199 [00:00<?, ?it/s]Loading weights: 100%|##########| 199/199 [00:00<00:00, 5668.25it/s]
-[1mBertModel LOAD REPORT[0m from: BAAI/bge-small-en-v1.5
-Key                     | Status     |  | 
-------------------------+------------+--+-
-embeddings.position_ids | UNEXPECTED |  | 
-
-Notes:
-- UNEXPECTED:	can be ignored when loading from different task/architecture; not ok if you expect identical arch.
-INFO:     Started server process [7936]
-INFO:     Waiting for application startup.
-INFO:     Application startup complete.
-ERROR:    [Errno 10048] error while attempting to bind on address ('127.0.0.1', 8000): [winerror 10048] solo se permite un uso de cada dirección de socket (protocolo/dirección de red/puerto)
-INFO:     Waiting for application shutdown.
-INFO:     Application shutdown complete.

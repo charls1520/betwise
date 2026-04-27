@@ -1,2 +1,54 @@
-# Variables de entorno
+# Environment Variables
 .env
+.env.local
+.env.*
+
+# Python Cache
+__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+.ruff_cache/
+
+# Virtual Environments
+venv/
+env/
+.venv/
+
+# Logs
+*.log
+logs/
+backend/logs/
+backend/*_err.txt
+backend/*_out.txt
+backend/*_log.txt
+backend/ingestion_error.txt
+backend/ingestion_log.txt
+
+# Databases
+*.db
+*.sqlite
+*.sqlite3
+
+# Data and State
+backend/data/chromadb/
+backend/data/raw/
+backend/data/historical/
+backend/data/ingestion_state.json
+data/chromadb/
+
+# ML Models and Metrics
+backend/models/*.joblib
+backend/models/*.json
+
+# Frontend
+frontend/node_modules/
+frontend/dist/
+frontend/build/
+.npm/
+
+# IDE and OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
