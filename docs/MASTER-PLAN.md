@@ -255,6 +255,14 @@ BetWise es un asistente web de apuestas deportivas enfocado en la Premier League
 - [x] Configurar búsqueda de parámetros en `Optuna` optimizando `log_loss` multiclase con `TimeSeriesSplit`
 - [x] Adaptar pipeline y tests para verificar la consistencia e integración del modelo 1X2 evolucionado
 
+### 39. Arquitectura de Robustez ML (Completo)
+- [x] Brainstorming y Diseño de Robustez ML (Cold Start, Fatiga Falsa, Desequilibrio, Leakage Horario, Inteligencia de Mercado)
+- [x] Imputación estricta por equipo para evitar contaminación cruzada de datos (`ffill` agrupado)
+- [x] Prevención de Data Leakage: Eliminación total de la variable `xg_diff`
+- [x] Forzado de UTC absoluto en fechas para evitar rotura de orden cronológico
+- [x] Ajuste de pesos de clase (`sample_weight`) para mejorar la predicción de empates
+- [x] Inyección de variables de Mercado (`market_implied_diff`) basándose en cuotas reales
+
 ---
 
 ## Próximos pasos
