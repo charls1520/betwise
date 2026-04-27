@@ -79,7 +79,11 @@ def download_football_data_co_uk(seasons: list = ["2526", "2425", "2324", "2223"
                 df = pd.read_csv(io.StringIO(csv_text))
                 df["Date"] = pd.to_datetime(df["Date"], format="%d/%m/%Y", errors="coerce")
                 df = df.dropna(subset=['Date', 'HomeTeam', 'AwayTeam'])
-                df = df.copy()
+                
+                # Apply column whitelist
+                whitelist_cols = ['Date', 'HomeTeam', 'AwayTeam', 'FTHG', 'FTAG', 'FTR', 'HST', 'AST', 'B365H', 'B365D', 'B365A']
+                existing_whitelist = [col for col in whitelist_cols if col in df.columns]
+                df = df[existing_whitelist].copy()
                 
                 # Find what we are missing
                 if not cached_df.empty:
