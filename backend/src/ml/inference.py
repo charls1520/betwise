@@ -7,13 +7,45 @@ from src.ml.features import build_features_for_matches
 def poisson_prob(lmbda, k):
     return (math.pow(lmbda, k) * math.exp(-lmbda)) / math.factorial(k)
 
-def predict_matches(raw_matches: list, model_dir: str = "models") -> list:
+def predict_matches(raw_matches: list, model_dir: str = "models", history_file: str = "data/historical/merged_history_cache.csv") -> list:
     """Loads trained models and predicts probabilities for new matches."""
-    df = build_features_for_matches(raw_matches)
+    if not raw_matches:
+        return []
+
+    df_future = pd.DataFrame(raw_matches)
+    
+    # Map odds API keys to historical data keys for feature building
+    if 'home_team' in df_future.columns:
+        df_future = df_future.rename(columns={'home_team': 'HomeTeam', 'away_team': 'AwayTeam', 'commence_time': 'Date'})
+        if 'home_xg' in df_future.columns:
+            df_future = df_future.rename(columns={'home_xg': 'Home_xG', 'away_xg': 'Away_xG', 'home_elo': 'Home_Elo', 'away_elo': 'Away_Elo'})
+            
+    df_future['is_future'] = True
+    df_future['original_index'] = range(len(df_future))
+
+    if os.path.exists(history_file):
+        try:
+            df_history = pd.read_csv(history_file)
+            df_history = df_history.assign(is_future=False, original_index=-1)
+            combined_df = pd.concat([df_history, df_future], ignore_index=True)
+            df_featured = build_features_for_matches(combined_df.to_dict("records"))
+            df = df_featured[df_featured['is_future'] == True].copy()
+            df = df.sort_values('original_index').reset_index(drop=True)
+            df = df.drop(columns=['is_future', 'original_index'])
+        except Exception as e:
+            # Fallback if there is an error loading history
+            df = build_features_for_matches(raw_matches)
+    else:
+        df = build_features_for_matches(raw_matches)
+
     if df.empty:
         return []
 
-    features = ["xg_diff", "elo_diff", "rest_days_diff", "shots_on_target_diff", "is_end_of_season", "goals_scored_general_diff", "goals_conceded_general_diff"]
+    features = [
+        "elo_diff", "rest_days_diff", "shots_on_target_diff", 
+        "is_end_of_season", "goals_scored_general_diff", "goals_conceded_general_diff",
+        "offensive_efficiency_diff", "defensive_efficiency_diff"
+    ]
     for col in features:
         if col not in df.columns:
             df[col] = 0
@@ -44,13 +76,13 @@ def predict_matches(raw_matches: list, model_dir: str = "models") -> list:
             # Based on features.py: "H": 1, "D": 0, "A": 2
             classes = list(winner_clf.classes_)
             match_pred["prob_away_win"] = (
-                probs_1x2[classes.index(2)] if 2 in classes else 0.0
+                float(probs_1x2[classes.index(2)]) if 2 in classes else 0.0
             )
             match_pred["prob_draw"] = (
-                probs_1x2[classes.index(0)] if 0 in classes else 0.0
+                float(probs_1x2[classes.index(0)]) if 0 in classes else 0.0
             )
             match_pred["prob_home_win"] = (
-                probs_1x2[classes.index(1)] if 1 in classes else 0.0
+                float(probs_1x2[classes.index(1)]) if 1 in classes else 0.0
             )
 
         if home_goals_clf and away_goals_clf:

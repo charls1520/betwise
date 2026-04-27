@@ -31,7 +31,7 @@ def test_build_features_for_matches():
 
     df = build_features_for_matches(data)
     assert not df.empty
-    assert "xg_diff" in df.columns
+    assert "xg_diff" not in df.columns
     assert "target_1x2" in df.columns
     assert "target_over25" in df.columns
 
@@ -69,14 +69,17 @@ def test_build_features_from_historical():
 
 def test_build_features_rolling_and_imputation():
     matches = [
-        {"HomeTeam": "A", "AwayTeam": "B", "Home_xG": 1.0, "Away_xG": 0.5, "Home_Elo": 1500, "Away_Elo": 1400, "FTR": "H"},
-        {"HomeTeam": "C", "AwayTeam": "A", "Home_xG": None, "Away_xG": 1.5, "Home_Elo": 1450, "Away_Elo": None, "FTR": "A"}
+        {"Date": "2024-01-01", "HomeTeam": "TeamA", "AwayTeam": "TeamB", "Home_xG": 1.0, "Away_xG": 0.5, "Home_Elo": 1500, "Away_Elo": 1400, "FTR": "H"},
+        {"Date": "2024-01-02", "HomeTeam": "TeamC", "AwayTeam": "TeamA", "Home_xG": None, "Away_xG": 1.5, "Home_Elo": 1450, "Away_Elo": None, "FTR": "A"}
     ]
     df = build_features_for_matches(matches)
     
-    # Check NaN imputation (forward fill or global mean fallback)
-    assert not df["xg_diff"].isna().any()
+    # Check NaN imputation (forward fill per team or global mean fallback)
+    assert "xg_diff" not in df.columns
     assert not df["elo_diff"].isna().any()
+    
+    # Check that TeamA's Elo was carried forward from index 0 (1500) to index 1 (Away_Elo)
+    assert df.iloc[1]["Away_Elo"] == 1500
 
 def test_new_ml_features():
     # Simulamos un dataset histórico de un equipo
