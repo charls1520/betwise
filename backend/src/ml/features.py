@@ -195,4 +195,19 @@ def build_features_for_matches(matches: list) -> pd.DataFrame:
     if "FTHG" in df.columns and "FTAG" in df.columns:
         df["target_over25"] = ((df["FTHG"] + df["FTAG"]) > 2.5).astype(int)
 
+    # Market Intelligence (Implied Probabilities Diff)
+    # Historic uses B365H/A, Inference uses home_odds/away_odds
+    home_odds_col = 'B365H' if 'B365H' in df.columns else 'home_odds' if 'home_odds' in df.columns else None
+    away_odds_col = 'B365A' if 'B365A' in df.columns else 'away_odds' if 'away_odds' in df.columns else None
+    
+    if home_odds_col and away_odds_col:
+        # Convert odds to probability (1/odds)
+        df['home_implied_prob'] = 1 / pd.to_numeric(df[home_odds_col], errors='coerce')
+        df['away_implied_prob'] = 1 / pd.to_numeric(df[away_odds_col], errors='coerce')
+        df['market_implied_diff'] = df['home_implied_prob'] - df['away_implied_prob']
+        # Fill NaNs with 0 (assuming even odds if missing)
+        df['market_implied_diff'] = df['market_implied_diff'].fillna(0)
+    else:
+        df['market_implied_diff'] = 0
+
     return df

@@ -44,7 +44,7 @@ def predict_matches(raw_matches: list, model_dir: str = "models", history_file: 
     features = [
         "elo_diff", "rest_days_diff", "shots_on_target_diff", 
         "is_end_of_season", "goals_scored_general_diff", "goals_conceded_general_diff",
-        "offensive_efficiency_diff", "defensive_efficiency_diff"
+        "offensive_efficiency_diff", "defensive_efficiency_diff", "market_implied_diff"
     ]
     for col in features:
         if col not in df.columns:

@@ -21,6 +21,7 @@ def test_predict_matches(mock_acc, mock_mae, mock_mse, mock_opt, mock_opt_clf, t
             "goals_conceded_general_diff": [0.2, 0.1, -0.2, -0.5, 1.0, 0.0, 0.2, 0.1, -0.2, -0.5, 1.0, 0.0],
             "offensive_efficiency_diff": [0.1, -0.1, 0.0, 0.2, -0.2, 0.1, 0.1, -0.1, 0.0, 0.2, -0.2, 0.1],
             "defensive_efficiency_diff": [0.0, 0.2, -0.1, -0.2, 0.1, 0.0, 0.0, 0.2, -0.1, -0.2, 0.1, 0.0],
+            "market_implied_diff": [0.1, -0.1, 0.0, 0.2, -0.2, 0.1, 0.1, -0.1, 0.0, 0.2, -0.2, 0.1],
             "target_1x2": [2, 0, 1, 2, 0, 1, 2, 0, 1, 2, 0, 1],
             "FTHG": [2, 0, 1, 3, 0, 1, 2, 0, 1, 3, 0, 1],
             "FTAG": [1, 0, 0, 1, 2, 1, 1, 0, 0, 1, 2, 1],
@@ -39,7 +40,9 @@ def test_predict_matches(mock_acc, mock_mae, mock_mse, mock_opt, mock_opt_clf, t
                 "Away_xG": 0.5,
                 "Home_Elo": 1800,
                 "Away_Elo": 1700,
-                "Date": "2026-05-01"
+                "Date": "2026-05-01",
+                "home_odds": 2.0,
+                "away_odds": 3.0
             }
         ]
     )

@@ -93,7 +93,7 @@ def train_and_save_models(df: pd.DataFrame, model_dir: str = "models"):
     features = [
         "elo_diff", "rest_days_diff", "shots_on_target_diff", 
         "is_end_of_season", "goals_scored_general_diff", "goals_conceded_general_diff",
-        "offensive_efficiency_diff", "defensive_efficiency_diff"
+        "offensive_efficiency_diff", "defensive_efficiency_diff", "market_implied_diff"
     ]
     
     # Pipeline de preprocesamiento usando ColumnTransformer
