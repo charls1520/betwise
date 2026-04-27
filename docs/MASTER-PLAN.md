@@ -263,6 +263,12 @@ BetWise es un asistente web de apuestas deportivas enfocado en la Premier League
 - [x] Ajuste de pesos de clase (`sample_weight`) para mejorar la predicción de empates
 - [x] Inyección de variables de Mercado (`market_implied_diff`) basándose en cuotas reales
 
+### 40. Limpieza Quirúrgica de Datos (Pendiente)
+- [ ] Filtrar CSVs históricos durante la ingesta para mantener solo las columnas críticas (Date, Equipos, FTR, Goles, Tiros, Cuotas Bet365).
+- [ ] Eliminar cálculo obsoleto de `target_over25` de `features.py`.
+- [ ] Purgar columnas temporales intermedias de cálculo (ej. `home_rest_days`) antes de pasar los datos al modelo.
+- [ ] Asegurar que las variables ausentes (`fallbacks`) se traten como `NaN` verdadero en lugar de `0` para optimizar XGBoost.
+
 ---
 
 ## Próximos pasos
