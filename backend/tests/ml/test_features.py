@@ -94,6 +94,16 @@ def test_timezone_and_cold_start():
     assert df.loc[0, "Home_Elo"] == 1350.0
     assert df.loc[0, "Away_Elo"] == 1350.0
 
+def test_false_fatigue_and_stats_cold_start():
+    matches = [
+        {"Date": "2024-01-01", "HomeTeam": "A", "AwayTeam": "B", "FTR": "H"}
+    ]
+    df = build_features_for_matches(matches)
+    
+    # First match ever should have 10 rest days
+    assert df.loc[0, "home_rest_days"] == 10.0
+    assert df.loc[0, "away_rest_days"] == 10.0
+
 def test_new_ml_features():
     data = [
         {"Date": "2023-01-01", "HomeTeam": "TeamA", "AwayTeam": "TeamB", "FTHG": 1, "FTAG": 0, "HST": 5, "AST": 2, "Home_xG": 1.2, "Away_xG": 0.8, "Home_Elo": 1500, "Away_Elo": 1400},

@@ -84,6 +84,8 @@ def build_features_for_matches(matches: list) -> pd.DataFrame:
         # Calcular fatiga (rest days) y capping a 10
         team_matches['prev_match_date'] = team_matches.groupby('Team')['Date'].shift(1)
         team_matches['rest_days'] = (team_matches['Date'] - team_matches['prev_match_date']).dt.days
+        # Llenar NaNs (primer partido) con 10 días de descanso
+        team_matches['rest_days'] = team_matches['rest_days'].fillna(10)
         team_matches['rest_days'] = np.clip(team_matches['rest_days'], 0, 10)
         
         # Promedio movil de tiros a puerta (ultimos 5 partidos) con shift para evitar leakage
