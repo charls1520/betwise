@@ -24,15 +24,29 @@ from src.utils.logger import get_logger
 load_dotenv()
 logger = get_logger()
 
+global_index = None
+
+def _build_index_sync():
+    global global_index
+    try:
+        # Initialize RAG models first
+        init_llama_index()
+        logger.info("Building RAG index from real data in background...")
+        global_index = build_index(load_real_documents())
+        logger.info("RAG index built successfully.")
+    except Exception as e:
+        logger.exception(f"Failed to build RAG index: {e}")
+        global_index = None
+
 @asynccontextmanager
 async def lifespan(app: FastAPI):
+    import asyncio
     start_scheduler()
+    # Run in background to avoid blocking server startup
+    asyncio.get_event_loop().run_in_executor(None, _build_index_sync)
     yield
 
 app = FastAPI(title="BetWise API", lifespan=lifespan)
-
-# Initialize RAG globally
-init_llama_index()
 
 
 def load_real_documents():
@@ -43,43 +57,41 @@ def load_real_documents():
     if os.path.exists(raw_dir):
         # Look for news json files
         news_files = glob.glob(f"{raw_dir}/**/news_*.json", recursive=True)
+        # Sort glob findings by modified time and only take the latest 1 news files
+        news_files = sorted(news_files, key=os.path.getmtime, reverse=True)[:1]
         for fpath in news_files:
             date_str = fpath.split(os.sep)[-2] if os.sep in fpath else fpath.split('/')[-2]
             with open(fpath, "r", encoding="utf-8") as f:
                 try:
                     data = json.load(f)
-                    for article in data.get("articles", []):
+                    for article in data.get("articles", [])[:15]:
                         text = f"Noticia [Publicada el {date_str}]: {article.get('title')}\nResumen: {article.get('summary')}"
                         docs.append(Document(text=text, metadata={"source": "bbc_news"}))
-                except Exception:
-                    pass
+                except Exception as e:
+                    logger.exception(f"Failed to load news file {fpath}: {e}")
         
         # Look for odds json files
         odds_files = glob.glob(f"{raw_dir}/**/odds_*.json", recursive=True)
+        # Sort glob findings by modified time and only take the latest 1 odds files
+        odds_files = sorted(odds_files, key=os.path.getmtime, reverse=True)[:1]
         for fpath in odds_files:
             date_str = fpath.split(os.sep)[-2] if os.sep in fpath else fpath.split('/')[-2]
             with open(fpath, "r", encoding="utf-8") as f:
                 try:
                     data = json.load(f)
-                    for match in data.get("matches", []):
+                    for match in data.get("matches", [])[:15]:
                         commence = match.get('commence_time', 'Unknown')
                         text = f"Partido [Generado el {date_str}]: {match.get('home_team')} vs {match.get('away_team')} a jugarse el {commence}."
                         docs.append(Document(text=text, metadata={"source": "odds"}))
-                except Exception:
-                    pass
+                except Exception as e:
+                    logger.exception(f"Failed to load odds file {fpath}: {e}")
 
     if not docs:
         docs.append(Document(text="System online. Waiting for first data scrape."))
     return docs
 
 
-try:
-    logger.info("Building RAG index from real data...")
-    global_index = build_index(load_real_documents())
-    logger.info("RAG index built successfully.")
-except Exception as e:
-    logger.error(f"Failed to build RAG index: {e}")
-    global_index = None
+# RAG index is now built in the background via lifespan.
 
 app.add_middleware(
     CORSMiddleware,
@@ -208,7 +220,7 @@ def get_latest_ml_suggestions() -> list:
         suggestions = []
         for idx, match in enumerate(valid_odds):
             pred = predictions[idx] if idx < len(predictions) else {}
-            home_prob = pred.get("prob_home_win", 0.0)
+            home_prob = float(pred.get("prob_home_win", 0.0))
             
             home_odds = 2.0
             bookmakers = match.get("bookmakers", [])
@@ -218,10 +230,10 @@ def get_latest_ml_suggestions() -> list:
                     outcomes = markets[0].get("outcomes", [])
                     for outcome in outcomes:
                         if outcome.get("name") == match.get("home_team"):
-                            home_odds = outcome.get("price", 2.0)
+                            home_odds = float(outcome.get("price", 2.0))
                             break
 
-            edge = calculate_value_edge(home_prob, home_odds)
+            edge = float(calculate_value_edge(home_prob, home_odds))
             suggestions.append({
                 "match": f"{match.get('home_team')} vs {match.get('away_team')}",
                 "prob_home": f"{home_prob * 100:.0f}%",
@@ -231,7 +243,7 @@ def get_latest_ml_suggestions() -> list:
             
         return suggestions
     except Exception as e:
-        logger.error(f"Error in ML suggestions: {e}")
+        logger.exception(f"Error in ML suggestions: {e}")
         return []
 
 
@@ -293,6 +305,7 @@ INSTRUCCIONES CRÍTICAS:
             ],
         )
     except Exception as e:
+        logger.exception(f"Error querying RAG: {e}")
         return ChatResponse(response=f"Error querying RAG: {e}", sources=[])
 
 
@@ -349,6 +362,18 @@ def get_dashboard_data():
                 valid_odds.append(match)
 
         # 4. Run ML Inference
+        # Filtrar partidos que tengan features válidos o el pipeline fallará si les faltan las nuevas (como market_implied_diff)
+        for match in valid_odds:
+            # Replicar el fallback de features.py por si falta la cuota
+            home_odds_col = match.get('home_odds', 2.0)
+            away_odds_col = match.get('away_odds', 2.0)
+            if home_odds_col and away_odds_col:
+                home_implied = 1 / float(home_odds_col)
+                away_implied = 1 / float(away_odds_col)
+                match['market_implied_diff'] = home_implied - away_implied
+            else:
+                match['market_implied_diff'] = 0.0
+
         predictions = predict_matches(valid_odds, model_dir="models") if valid_odds else []
 
         # 5. Merge results
@@ -357,7 +382,7 @@ def get_dashboard_data():
         for idx, match in enumerate(valid_odds):
             pred = predictions[idx] if idx < len(predictions) else {}
 
-            home_prob = pred.get("prob_home_win", 0.0)
+            home_prob = float(pred.get("prob_home_win", 0.0))
             home_odds = 2.0
 
             bookmakers = match.get("bookmakers", [])
@@ -367,18 +392,18 @@ def get_dashboard_data():
                     outcomes = markets[0].get("outcomes", [])
                     for outcome in outcomes:
                         if outcome.get("name") == match.get("home_team"):
-                            home_odds = outcome.get("price", 2.0)
+                            home_odds = float(outcome.get("price", 2.0))
                             break
 
-            edge = calculate_value_edge(home_prob, home_odds)
+            edge = float(calculate_value_edge(home_prob, home_odds))
 
             match_obj = {
                 "id": idx,
                 "home_team": match.get("home_team"),
                 "away_team": match.get("away_team"),
                 "prob_home_win": home_prob,
-                "prob_draw": pred.get("prob_draw", 0.0),
-                "prob_away_win": pred.get("prob_away_win", 0.0),
+                "prob_draw": float(pred.get("prob_draw", 0.0)),
+                "prob_away_win": float(pred.get("prob_away_win", 0.0)),
                 "home_odds": home_odds,
                 "home_edge": edge,
                 "match_time": match.get("commence_time", "TBA"),
@@ -402,8 +427,8 @@ def get_dashboard_data():
 
         return {"matches": dashboard_data, "suggestions": suggestions}
     except Exception as e:
-        logger.error(f"Dashboard Error: {e}")
-        return [{"error": str(e)}]
+        logger.exception(f"Dashboard Error: {e}")
+        return {"matches": [], "suggestions": [], "error": str(e)}
 
 
 from src.utils.audit_logger import get_unmatched_teams
