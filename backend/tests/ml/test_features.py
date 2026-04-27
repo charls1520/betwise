@@ -81,8 +81,20 @@ def test_build_features_rolling_and_imputation():
     # Check that TeamA's Elo was carried forward from index 0 (1500) to index 1 (Away_Elo)
     assert df.iloc[1]["Away_Elo"] == 1500
 
+def test_timezone_and_cold_start():
+    # Cold start: Team without history should get 1350 Elo and bottom tercile stats (simulated as 0 if no other teams)
+    # Timezone: A match with timezone info should not break the date sorting
+    matches = [
+        {"Date": "2024-01-01T15:00:00Z", "HomeTeam": "A", "AwayTeam": "B", "Home_Elo": None, "Away_Elo": None, "FTR": "H"},
+        {"Date": "2024-01-01T20:00:00+05:00", "HomeTeam": "C", "AwayTeam": "D", "Home_Elo": 1600, "Away_Elo": 1400, "FTR": "A"}
+    ]
+    df = build_features_for_matches(matches)
+    
+    # Since there's no history, Elo should be 1350 for A and B
+    assert df.loc[0, "Home_Elo"] == 1350.0
+    assert df.loc[0, "Away_Elo"] == 1350.0
+
 def test_new_ml_features():
-    # Simulamos un dataset histórico de un equipo
     data = [
         {"Date": "2023-01-01", "HomeTeam": "TeamA", "AwayTeam": "TeamB", "FTHG": 1, "FTAG": 0, "HST": 5, "AST": 2, "Home_xG": 1.2, "Away_xG": 0.8, "Home_Elo": 1500, "Away_Elo": 1400},
         {"Date": "2023-01-05", "HomeTeam": "TeamC", "AwayTeam": "TeamA", "FTHG": 2, "FTAG": 1, "HST": 4, "AST": 3, "Home_xG": 1.5, "Away_xG": 1.0, "Home_Elo": 1450, "Away_Elo": 1505},

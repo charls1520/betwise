@@ -6,9 +6,9 @@ def build_features_for_matches(matches: list) -> pd.DataFrame:
     if df.empty:
         return df
 
-    # Asegurar que Date sea datetime y ordenado
+    # Asegurar que Date sea datetime y ordenado (UTC)
     if "Date" in df.columns:
-        df["Date"] = pd.to_datetime(df["Date"], errors="coerce")
+        df["Date"] = pd.to_datetime(df["Date"], errors="coerce", utc=True)
         df = df.sort_values("Date").reset_index(drop=True)
 
     # Impute NaNs for Elo with forward fill PER TEAM
@@ -20,8 +20,8 @@ def build_features_for_matches(matches: list) -> pd.DataFrame:
         away_elo_col = 'Away_Elo' if 'Away_Elo' in df.columns else 'away_elo' if 'away_elo' in df.columns else None
         
         if home_elo_col and away_elo_col:
-            global_median_elo = pd.concat([df[home_elo_col], df[away_elo_col]]).median()
-            if pd.isna(global_median_elo): global_median_elo = 1500.0
+            # Cold start for Elo is 1350 for newly promoted/unknown teams
+            global_median_elo = 1350.0
             
             home_elos_imputed = []
             away_elos_imputed = []
