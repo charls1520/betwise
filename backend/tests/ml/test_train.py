@@ -10,6 +10,9 @@ def test_train_and_save_models(mock_acc, tmp_path):
         {
             "xg_diff": [1.0, -0.5, 0.2, 2.5, -1.5, 0.0, 1.0, -0.5, 0.2, 2.5, -1.5, 0.0],
             "elo_diff": [100, -50, 20, 250, -150, 0, 100, -50, 20, 250, -150, 0],
+            "rest_days_diff": [0, 1, -1, 0, 2, -2, 0, 1, -1, 0, 2, -2],
+            "shots_on_target_diff": [2.0, -1.0, 0.5, 3.0, -2.0, 0.0, 2.0, -1.0, 0.5, 3.0, -2.0, 0.0],
+            "is_end_of_season": [0, 0, 1, 0, 1, 0, 0, 0, 1, 0, 1, 0],
             "target_1x2": [2, 0, 1, 2, 0, 1, 2, 0, 1, 2, 0, 1],
             "target_over25": [1, 0, 0, 1, 1, 0, 1, 0, 0, 1, 1, 0],
         }
@@ -28,6 +31,9 @@ def test_train_and_save_models_with_imputation(mock_acc, tmp_path):
     df = pd.DataFrame({
         "xg_diff": [1.0, -0.5, None, 2.0, 1.0, -0.5, None, 2.0, 1.0, -0.5],
         "elo_diff": [100, -50, 20, None, 100, -50, 20, None, 100, -50],
+        "rest_days_diff": [1, -1, None, 0, 2, -2, None, 0, 1, -1],
+        "shots_on_target_diff": [1.5, -0.5, None, 2.0, 1.0, -1.0, None, 1.5, 0.5, -0.5],
+        "is_end_of_season": [0, 1, 0, 1, 0, 0, 1, 0, 1, 0],
         "target_1x2": [1, 2, 0, 1, 1, 2, 0, 1, 1, 2],
         "target_over25": [1, 0, 1, 1, 0, 1, 0, 1, 1, 0]
     })

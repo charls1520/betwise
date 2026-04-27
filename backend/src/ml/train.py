@@ -15,7 +15,7 @@ def train_and_save_models(df: pd.DataFrame, model_dir: str = "models"):
     """Trains independent models for each market and saves them."""
     os.makedirs(model_dir, exist_ok=True)
 
-    features = ["xg_diff", "elo_diff"]
+    features = ["xg_diff", "elo_diff", "rest_days_diff", "shots_on_target_diff", "is_end_of_season"]
     
     # Robust imputation pipeline instead of fillna(0)
     imputer = SimpleImputer(strategy='median')
