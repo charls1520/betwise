@@ -220,6 +220,12 @@ BetWise es un asistente web de apuestas deportivas enfocado en la Premier League
 - [ ] Desarrollar Módulo de Recuperación en Vivo con Scrapling
 - [ ] Integrar Fallback con Promedios y Banderas de Fiabilidad
 
+### 33. Integración de Notificaciones de Telegram (Pendiente)
+- [x] Brainstorming y Diseño de Integración
+- [ ] Configurar variables de entorno y credentials
+- [ ] Implementar `TelegramNotifier` con formateo de mensajes
+- [ ] Integrar Notificador en orquestador de ingesta diaria
+
 ---
 
 ## Próximos pasos
