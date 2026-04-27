@@ -226,6 +226,12 @@ BetWise es un asistente web de apuestas deportivas enfocado en la Premier League
 - [ ] Implementar `TelegramNotifier` con formateo de mensajes
 - [ ] Integrar Notificador en orquestador de ingesta diaria
 
+### 34. Mejoras Predictivas de Machine Learning - Fase A (Completo)
+- [x] Brainstorming y Diseño de Nuevas Variables
+- [x] Implementar cálculo de fatiga (rest days), tiros a puerta y contexto de temporada en `features.py`
+- [x] Actualizar pipeline de entrenamiento e inferencia con nuevas variables
+- [x] Ejecutar y validar tests unitarios
+
 ---
 
 ## Próximos pasos

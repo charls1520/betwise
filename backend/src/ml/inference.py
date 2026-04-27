@@ -10,7 +10,7 @@ def predict_matches(raw_matches: list, model_dir: str = "models") -> list:
     if df.empty:
         return []
 
-    features = ["xg_diff", "elo_diff"]
+    features = ["xg_diff", "elo_diff", "rest_days_diff", "shots_on_target_diff", "is_end_of_season"]
     for col in features:
         if col not in df.columns:
             df[col] = 0
