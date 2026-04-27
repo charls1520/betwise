@@ -1,6 +1,8 @@
 import os
 import time
 import requests
+from datetime import datetime
+from zoneinfo import ZoneInfo
 from src.utils.logger import get_logger
 
 logger = get_logger()
@@ -14,7 +16,15 @@ class TelegramNotifier:
     def format_message(self, pred: dict) -> str:
         home = pred.get("home_team", "Unknown")
         away = pred.get("away_team", "Unknown")
-        date = pred.get("commence_time", "Unknown Date")
+        date_str = pred.get("commence_time", "Unknown Date")
+        
+        try:
+            if date_str != "Unknown Date":
+                dt = datetime.fromisoformat(date_str.replace('Z', '+00:00'))
+                dt_utc5 = dt.astimezone(ZoneInfo("America/Bogota"))
+                date_str = dt_utc5.strftime("%Y-%m-%d %I:%M %p")
+        except Exception as e:
+            logger.warning(f"Error parsing date {date_str}: {e}")
         
         prob_h = pred.get("prob_home_win", 0) * 100
         prob_d = pred.get("prob_draw", 0) * 100
@@ -30,7 +40,7 @@ class TelegramNotifier:
         value_icon = " 🟢 *VALUE EDGE DETECTED*" if value_edge else ""
 
         msg = f"🏆 *{home} vs {away}*\n"
-        msg += f"📅 {date}\n\n"
+        msg += f"📅 {date_str}\n\n"
         msg += f"📊 *1X2 Prediction:*\n"
         msg += f"• Home: {prob_h:.1f}% (Odds: {odds_h})\n"
         msg += f"• Draw: {prob_d:.1f}% (Odds: {odds_d})\n"
