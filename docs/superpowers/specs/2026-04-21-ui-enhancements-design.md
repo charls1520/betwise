@@ -11,7 +11,7 @@ Este diseño aborda las mejoras solicitadas para la interfaz de BetWise enfocada
 ### 2. Frontend: Datos y UI (`DashboardPanel.tsx` y `types.ts`)
 - Añadir `match_time: string` y `league: string` a las interfaces de TypeScript.
 - Quitar el método `.substring(0, 3).toUpperCase()` de la visualización de `home_team` y `away_team` en las "Tarjetas de Partido" (Match Cards) para mostrar los nombres completos.
-- Agregar en la tarjeta un sub-header o label con la hora `match_time` (formateado legible en TS si se requiere, usando la zona horaria local).
+- Agregar en la tarjeta un sub-header o label con la hora `match_time` (formateado a UTC-5, hora de Bogotá).
 - Remplazar el label verde estático "PREMIER LEAGUE" por el valor real dinámico provisto en la propiedad `league`.
 
 ### 3. Frontend: Layout y Menús Colapsables (`App.tsx`)

@@ -1,0 +1,386 @@
+{
+  "Aston Villa": {
+    "xg_for_avg": 1.4374702058823532,
+    "xg_against_avg": 1.497562617647059
+  },
+  "Everton": {
+    "xg_for_avg": 1.3085811470588236,
+    "xg_against_avg": 1.5470510294117643
+  },
+  "Bournemouth": {
+    "xg_for_avg": 1.7790761470588237,
+    "xg_against_avg": 1.5153067647058822
+  },
+  "Sunderland": {
+    "xg_for_avg": 1.0988207941176469,
+    "xg_against_avg": 1.6352055588235292
+  },
+  "Crystal Palace": {
+    "xg_for_avg": 1.6737386969696966,
+    "xg_against_avg": 1.4617706969696966
+  },
+  "Chelsea": {
+    "xg_for_avg": 1.9832485588235291,
+    "xg_against_avg": 1.491197705882353
+  },
+  "West Ham": {
+    "xg_for_avg": 1.2905086764705882,
+    "xg_against_avg": 1.7743995588235297
+  },
+  "Tottenham": {
+    "xg_for_avg": 1.1948647705882351,
+    "xg_against_avg": 1.522076294117647
+  },
+  "Arsenal": {
+    "xg_for_avg": 1.9656733235294117,
+    "xg_against_avg": 0.8799169764705882
+  },
+  "Newcastle United": {
+    "xg_for_avg": 1.5722743823529408,
+    "xg_against_avg": 1.5085301764705883
+  },
+  "Liverpool": {
+    "xg_for_avg": 1.7959709117647058,
+    "xg_against_avg": 1.3744258235294118
+  },
+  "Manchester City": {
+    "xg_for_avg": 2.0897392424242422,
+    "xg_against_avg": 1.1985927878787879
+  },
+  "Manchester United": {
+    "xg_for_avg": 1.837386333333333,
+    "xg_against_avg": 1.3383416969696966
+  },
+  "Burnley": {
+    "xg_for_avg": 0.9798439411764704,
+    "xg_against_avg": 2.195983411764706
+  },
+  "Brighton": {
+    "xg_for_avg": 1.5114562058823526,
+    "xg_against_avg": 1.3832297941176472
+  },
+  "Fulham": {
+    "xg_for_avg": 1.306709735294118,
+    "xg_against_avg": 1.58869
+  },
+  "Wolverhampton Wanderers": {
+    "xg_for_avg": 0.9301142352941177,
+    "xg_against_avg": 1.8349085294117644
+  },
+  "Brentford": {
+    "xg_for_avg": 1.7879577575757568,
+    "xg_against_avg": 1.4338347272727274
+  },
+  "Leeds": {
+    "xg_for_avg": 1.5619995294117646,
+    "xg_against_avg": 1.4540359705882353
+  },
+  "Nottingham Forest": {
+    "xg_for_avg": 1.213500470588235,
+    "xg_against_avg": 1.626337235294118
+  },
+  "Sevilla": {
+    "xg_for_avg": 1.047078909090909,
+    "xg_against_avg": 1.718499878787879
+  },
+  "Real Sociedad": {
+    "xg_for_avg": 1.6296256666666664,
+    "xg_against_avg": 1.5334940303030302
+  },
+  "Espanyol": {
+    "xg_for_avg": 1.4405497812499999,
+    "xg_against_avg": 1.70109503125
+  },
+  "Getafe": {
+    "xg_for_avg": 0.879541,
+    "xg_against_avg": 1.3601311818181816
+  },
+  "Atletico Madrid": {
+    "xg_for_avg": 1.7393960303030305,
+    "xg_against_avg": 1.3591303636363636
+  },
+  "Rayo Vallecano": {
+    "xg_for_avg": 1.5795370909090904,
+    "xg_against_avg": 1.531661181818182
+  },
+  "Valencia": {
+    "xg_for_avg": 1.4216132727272728,
+    "xg_against_avg": 1.4746337575757578
+  },
+  "Athletic Club": {
+    "xg_for_avg": 1.4720546060606061,
+    "xg_against_avg": 1.2697787575757578
+  },
+  "Barcelona": {
+    "xg_for_avg": 2.8221545151515155,
+    "xg_against_avg": 1.366281515151515
+  },
+  "Real Madrid": {
+    "xg_for_avg": 2.2500750606060604,
+    "xg_against_avg": 1.1773081515151518
+  },
+  "Levante": {
+    "xg_for_avg": 1.4859706250000002,
+    "xg_against_avg": 1.8310184687499995
+  },
+  "Celta Vigo": {
+    "xg_for_avg": 1.386118375,
+    "xg_against_avg": 1.3848092843749997
+  },
+  "Real Betis": {
+    "xg_for_avg": 1.6003766060606062,
+    "xg_against_avg": 1.278705151515151
+  },
+  "Villarreal": {
+    "xg_for_avg": 1.8295347187500004,
+    "xg_against_avg": 1.4014200625000002
+  },
+  "Osasuna": {
+    "xg_for_avg": 1.3531151515151514,
+    "xg_against_avg": 1.3184220909090911
+  },
+  "Alaves": {
+    "xg_for_avg": 1.4104726363636362,
+    "xg_against_avg": 1.4349605454545458
+  },
+  "Elche": {
+    "xg_for_avg": 1.2999745454545453,
+    "xg_against_avg": 1.8875300000000002
+  },
+  "Girona": {
+    "xg_for_avg": 1.329438,
+    "xg_against_avg": 1.7868680606060605
+  },
+  "Mallorca": {
+    "xg_for_avg": 1.2214256090909095,
+    "xg_against_avg": 1.7749705454545452
+  },
+  "Real Oviedo": {
+    "xg_for_avg": 1.1429885757575757,
+    "xg_against_avg": 1.7556611818181818
+  },
+  "Verona": {
+    "xg_for_avg": 1.0116804499999998,
+    "xg_against_avg": 1.336270764705882
+  },
+  "Roma": {
+    "xg_for_avg": 1.526220323529412,
+    "xg_against_avg": 1.1898647352941176
+  },
+  "Lazio": {
+    "xg_for_avg": 1.2461981515151517,
+    "xg_against_avg": 1.2567156666666668
+  },
+  "Bologna": {
+    "xg_for_avg": 1.340406264705882,
+    "xg_against_avg": 1.3750107264705882
+  },
+  "Juventus": {
+    "xg_for_avg": 1.9566138484848485,
+    "xg_against_avg": 1.0071046363636362
+  },
+  "Udinese": {
+    "xg_for_avg": 1.2035393939393941,
+    "xg_against_avg": 1.534459939393939
+  },
+  "Genoa": {
+    "xg_for_avg": 1.3150780882352942,
+    "xg_against_avg": 1.4588282441176472
+  },
+  "Sassuolo": {
+    "xg_for_avg": 1.1618764999999998,
+    "xg_against_avg": 1.6148592941176467
+  },
+  "Napoli": {
+    "xg_for_avg": 1.5502357647058826,
+    "xg_against_avg": 1.1020693823529413
+  },
+  "Inter": {
+    "xg_for_avg": 2.3183610294117645,
+    "xg_against_avg": 0.952469294117647
+  },
+  "Atalanta": {
+    "xg_for_avg": 1.8533873030303027,
+    "xg_against_avg": 1.3562055454545452
+  },
+  "Fiorentina": {
+    "xg_for_avg": 1.4619191176470587,
+    "xg_against_avg": 1.4865717058823527
+  },
+  "AC Milan": {
+    "xg_for_avg": 1.7668974848484853,
+    "xg_against_avg": 1.1127852424242424
+  },
+  "Torino": {
+    "xg_for_avg": 1.334939382352941,
+    "xg_against_avg": 1.5214222647058822
+  },
+  "Cagliari": {
+    "xg_for_avg": 1.0330088787878786,
+    "xg_against_avg": 1.5914791515151516
+  },
+  "Parma Calcio 1913": {
+    "xg_for_avg": 0.9725728911764707,
+    "xg_against_avg": 1.5582134411764712
+  },
+  "Lecce": {
+    "xg_for_avg": 0.9339490000000004,
+    "xg_against_avg": 1.674883294117647
+  },
+  "Cremonese": {
+    "xg_for_avg": 1.000623911764706,
+    "xg_against_avg": 1.8399377941176471
+  },
+  "Como": {
+    "xg_for_avg": 1.7560265,
+    "xg_against_avg": 1.0571465882352944
+  },
+  "Pisa": {
+    "xg_for_avg": 1.1236737852941177,
+    "xg_against_avg": 1.805589920588235
+  },
+  "Bayern Munich": {
+    "xg_for_avg": 3.16803129032258,
+    "xg_against_avg": 1.2264665483870967
+  },
+  "Hamburger SV": {
+    "xg_for_avg": 1.275896548387097,
+    "xg_against_avg": 1.9807529032258062
+  },
+  "Bayer Leverkusen": {
+    "xg_for_avg": 2.1327640967741934,
+    "xg_against_avg": 1.4324970645161288
+  },
+  "Hoffenheim": {
+    "xg_for_avg": 1.853063838709677,
+    "xg_against_avg": 1.613866580645161
+  },
+  "Augsburg": {
+    "xg_for_avg": 1.4426056129032259,
+    "xg_against_avg": 1.974535483870968
+  },
+  "Werder Bremen": {
+    "xg_for_avg": 1.2757603225806449,
+    "xg_against_avg": 1.7406434838709677
+  },
+  "Mainz 05": {
+    "xg_for_avg": 1.7564475193548386,
+    "xg_against_avg": 1.7679287096774192
+  },
+  "Borussia Dortmund": {
+    "xg_for_avg": 1.9693564193548385,
+    "xg_against_avg": 1.2457938709677425
+  },
+  "Borussia M.Gladbach": {
+    "xg_for_avg": 1.358258387096774,
+    "xg_against_avg": 1.6647203225806446
+  },
+  "Wolfsburg": {
+    "xg_for_avg": 1.4238014193548385,
+    "xg_against_avg": 1.9446610645161289
+  },
+  "Eintracht Frankfurt": {
+    "xg_for_avg": 1.486754548387097,
+    "xg_against_avg": 1.6182360645161291
+  },
+  "VfB Stuttgart": {
+    "xg_for_avg": 1.9783549999999999,
+    "xg_against_avg": 1.522061
+  },
+  "FC Cologne": {
+    "xg_for_avg": 1.604610193548387,
+    "xg_against_avg": 1.8096760967741934
+  },
+  "Freiburg": {
+    "xg_for_avg": 1.4856508064516134,
+    "xg_against_avg": 1.5780205193548387
+  },
+  "RasenBallsport Leipzig": {
+    "xg_for_avg": 2.2530666774193544,
+    "xg_against_avg": 1.4379412258064515
+  },
+  "Union Berlin": {
+    "xg_for_avg": 1.3591672258064518,
+    "xg_against_avg": 1.6696851935483872
+  },
+  "FC Heidenheim": {
+    "xg_for_avg": 1.3678320322580644,
+    "xg_against_avg": 2.0737489032258063
+  },
+  "St. Pauli": {
+    "xg_for_avg": 0.9681197096774194,
+    "xg_against_avg": 1.8583066129032255
+  },
+  "Lille": {
+    "xg_for_avg": 1.7307386129032254,
+    "xg_against_avg": 1.2049323870967743
+  },
+  "Paris Saint Germain": {
+    "xg_for_avg": 2.307935833333333,
+    "xg_against_avg": 0.8945406533333332
+  },
+  "Rennes": {
+    "xg_for_avg": 1.6020674258064518,
+    "xg_against_avg": 1.6792939677419356
+  },
+  "Marseille": {
+    "xg_for_avg": 2.0043347,
+    "xg_against_avg": 1.3912402333333331
+  },
+  "Angers": {
+    "xg_for_avg": 0.9493761290322581,
+    "xg_against_avg": 1.726263
+  },
+  "Nantes": {
+    "xg_for_avg": 1.0865590322580643,
+    "xg_against_avg": 1.6284893225806447
+  },
+  "Nice": {
+    "xg_for_avg": 1.3583481000000006,
+    "xg_against_avg": 1.8221765
+  },
+  "Monaco": {
+    "xg_for_avg": 1.8730530967741936,
+    "xg_against_avg": 1.533767387096774
+  },
+  "Toulouse": {
+    "xg_for_avg": 1.378738387096774,
+    "xg_against_avg": 1.3659484580645163
+  },
+  "Lyon": {
+    "xg_for_avg": 1.6066069032258066,
+    "xg_against_avg": 1.3879416129032256
+  },
+  "Lorient": {
+    "xg_for_avg": 1.4448658387096773,
+    "xg_against_avg": 1.5442225225806447
+  },
+  "Metz": {
+    "xg_for_avg": 0.9956713096774193,
+    "xg_against_avg": 1.9505159032258066
+  },
+  "Lens": {
+    "xg_for_avg": 2.2343403333333334,
+    "xg_against_avg": 1.282801266666667
+  },
+  "Strasbourg": {
+    "xg_for_avg": 1.6912080400000002,
+    "xg_against_avg": 1.372600133333333
+  },
+  "Brest": {
+    "xg_for_avg": 1.3497052666666667,
+    "xg_against_avg": 1.6338472000000002
+  },
+  "Auxerre": {
+    "xg_for_avg": 1.1711289999999999,
+    "xg_against_avg": 1.4382760000000003
+  },
+  "Le Havre": {
+    "xg_for_avg": 1.155996032258065,
+    "xg_against_avg": 1.661626806451613
+  },
+  "Paris FC": {
+    "xg_for_avg": 1.384708838709677,
+    "xg_against_avg": 1.7246844838709676
+  }
+}

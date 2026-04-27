@@ -1,7 +1,7 @@
 from typing import List
 from llama_index.core import Document, VectorStoreIndex, StorageContext
 from src.rag.vector_store import get_vector_store
-
+from src.rag.config import resilient_query_llm
 
 def build_index(
     documents: List[Document],
@@ -20,5 +20,4 @@ def build_index(
 def query_index(index: VectorStoreIndex, query_text: str) -> str:
     """Queries the index using the globally configured LLM (Ollama)."""
     query_engine = index.as_query_engine()
-    response = query_engine.query(query_text)
-    return str(response)
+    return resilient_query_llm(query_engine, query_text)

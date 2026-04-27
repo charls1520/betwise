@@ -4,6 +4,9 @@ import asyncio
 import nest_asyncio
 from playwright.async_api import async_playwright
 from tenacity import retry, stop_after_attempt, wait_fixed
+from src.utils.logger import get_logger
+
+logger = get_logger()
 
 # Patch asyncio to allow nested event loops (useful for FastAPI/Jupyter)
 nest_asyncio.apply()
@@ -65,7 +68,7 @@ async def _fetch_understat_async(league_id: str) -> dict:
             return stats
 
         except Exception as e:
-            print(f"Playwright Scraper Error for {league_id}: {e}")
+            logger.error(f"Playwright Scraper Error for {league_id}: {e}")
             raise e
         finally:
             await browser.close()

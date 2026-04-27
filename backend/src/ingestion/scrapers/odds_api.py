@@ -36,6 +36,8 @@ def fetch_premier_league_odds(api_key: str, sport_key: str = "soccer_epl") -> li
             commence_time_utc = datetime.datetime.fromisoformat(commence_time_str.replace('Z', '+00:00'))
             commence_time_utc5 = commence_time_utc.astimezone(tz)
             
+            # Fix to prevent showing PAST matches: start time must be exactly from now to +48h
+            # The odds api returns matches that already started or happened today sometimes
             if now_utc5 <= commence_time_utc5 <= limit_utc5:
                 match['sport_key'] = sport_key
                 filtered_matches.append(match)

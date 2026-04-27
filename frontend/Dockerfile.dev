@@ -1,0 +1,11 @@
+FROM node:20-alpine
+
+WORKDIR /app
+
+COPY package.json package-lock.json* ./
+
+RUN npm install
+
+# El código se montará vía volumen en docker-compose
+# Comando de inicio exponiendo el host
+CMD ["npm", "run", "dev", "--", "--host"]

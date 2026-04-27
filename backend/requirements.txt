@@ -25,3 +25,4 @@ scrapling[fetchers]
 pydantic
 llama-index-llms-openai
 llama-index-llms-openai-like
+psycopg2-binary

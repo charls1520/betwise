@@ -214,6 +214,12 @@ BetWise es un asistente web de apuestas deportivas enfocado en la Premier League
 - [x] Implementar conteo y métricas de salud para bases de datos (SQLite, ChromaDB)
 - [x] Generar un reporte Markdown unificado de auditoría (`docs/audits/`)
 
+### 32. Auditoría de Datos y Recuperación Activa (En progreso)
+- [x] Brainstorming y Diseño de Recuperación y Tolerancia
+- [ ] Implementar Logger de Auditoría para Equipos Huérfanos
+- [ ] Desarrollar Módulo de Recuperación en Vivo con Scrapling
+- [ ] Integrar Fallback con Promedios y Banderas de Fiabilidad
+
 ---
 
 ## Próximos pasos

@@ -37,16 +37,16 @@ class TeamNormalizer:
             
         prompt = (
             f"The scraper found the team '{raw_name}'. "
-            f"Which of these official Premier League teams does it refer to: {self.canonical_teams}? "
+            f"Which of these official teams does it refer to: {self.canonical_teams}? "
             f"You must reply EXCLUSIVAMENTE with the exact official team name from the list, with no punctuation or extra text. "
             f"If it is none of them, reply 'NONE'."
         )
         
         try:
             response = Settings.llm.complete(prompt)
-        except ValueError as e:
-            logger.error(f"LLM Configuration Error (Auto-healing skipped): {e}")
-            return None
+        except Exception as e:
+            logger.error(f"LLM Error during Auto-healing for '{raw_name}': {type(e).__name__} - {e}")
+            raise e
             
         answer = str(response).strip()
         

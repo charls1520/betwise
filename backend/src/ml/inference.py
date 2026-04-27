@@ -34,16 +34,16 @@ def predict_matches(raw_matches: list, model_dir: str = "models") -> list:
 
         if winner_clf:
             probs_1x2 = winner_clf.predict_proba(x_row)[0]
-            # Assuming classes are [0, 1, 2] -> [Away, Draw, Home]
+            # Based on features.py: "H": 1, "D": 0, "A": 2
             classes = list(winner_clf.classes_)
             match_pred["prob_away_win"] = (
-                probs_1x2[classes.index(0)] if 0 in classes else 0.0
+                probs_1x2[classes.index(2)] if 2 in classes else 0.0
             )
             match_pred["prob_draw"] = (
-                probs_1x2[classes.index(1)] if 1 in classes else 0.0
+                probs_1x2[classes.index(0)] if 0 in classes else 0.0
             )
             match_pred["prob_home_win"] = (
-                probs_1x2[classes.index(2)] if 2 in classes else 0.0
+                probs_1x2[classes.index(1)] if 1 in classes else 0.0
             )
 
         if goals_clf:

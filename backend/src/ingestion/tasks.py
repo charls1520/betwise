@@ -41,7 +41,9 @@ def run_daily_scraping(odds_api_key: str = None):
     elo_stats = fetch_clubelo_stats()
     
     valid_elo = {}
-    for team, elo in elo_stats.items():
+    for stat in elo_stats:
+        team = stat.get("team")
+        elo = stat.get("elo")
         if isinstance(elo, (int, float)) and 500.0 < elo < 2500.0:
             valid_elo[team] = float(elo)
         else:

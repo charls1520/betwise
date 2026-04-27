@@ -1,0 +1,28 @@
+<h2>How should we display the matches on the Dashboard?</h2>
+<p class="subtitle">The current mock only shows one old match. We'll connect it to real data. How do you want to see the upcoming matches?</p>
+
+<div class="options">
+  <div class="option" data-choice="list" onclick="toggleSelect(this)">
+    <div class="letter">A</div>
+    <div class="content">
+      <h3>List View with Expandable Stats</h3>
+      <p>A clean, vertical list of matches. Clicking a match expands it to reveal detailed xG stats, recent form, and ML vs Bookie odds.</p>
+    </div>
+  </div>
+  
+  <div class="option" data-choice="grid" onclick="toggleSelect(this)">
+    <div class="letter">B</div>
+    <div class="content">
+      <h3>Card Grid (Highlighting Value Bets)</h3>
+      <p>Matches are displayed as cards. Cards clearly highlight if there's a "Value Bet" (e.g. ML predicts 60% win, Bookie implies 40%).</p>
+    </div>
+  </div>
+
+  <div class="option" data-choice="table" onclick="toggleSelect(this)">
+    <div class="letter">C</div>
+    <div class="content">
+      <h3>Dense Analytics Table</h3>
+      <p>A spreadsheet-like view showing all data points (Odds, ML Probs, Edge %) at once. Best for serious bettors scanning for value.</p>
+    </div>
+  </div>
+</div>
