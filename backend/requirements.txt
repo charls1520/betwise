@@ -27,3 +27,5 @@ llama-index-llms-openai
 llama-index-llms-openai-like
 psycopg2-binary
 xgboost
+optuna
+sidetable

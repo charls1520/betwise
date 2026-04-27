@@ -238,6 +238,23 @@ BetWise es un asistente web de apuestas deportivas enfocado en la Premier League
 - [x] Reemplazar modelo logístico de clasificación por regresores `XGBoost` separados para FTHG y FTAG
 - [x] Implementar cálculo de probabilidad Poisson para Over/Under 2.5 en inferencia
 
+### 36. XGBoost Tuning Profesional & Nuevas Variables de Eficacia (Completo)
+- [x] Brainstorming y Diseño de Integración (Optuna, ColumnTransformer, TimeSeriesSplit)
+- [x] Implementar cálculo de Eficacia Ofensiva/Defensiva (Goles vs xG) en `features.py`
+- [x] Implementar búsqueda automatizada de hiperparámetros con `Optuna`
+- [x] Refactorizar pipelines usando `ColumnTransformer`
+- [x] Ejecutar entrenamiento en contenedores para superar Quality Gate (RMSE < 1.3)
+
+### 37. Inferencia con Contexto Histórico (Fusión al Vuelo) (Completo)
+- [x] Modificar `predict_matches` para leer `merged_history_cache.csv` e inyectarlo en los datos de entrada
+- [x] Calcular las características usando `.shift(1)` en el DataFrame fusionado para recuperar valores anteriores
+- [x] Filtrar para devolver únicamente las inferencias del día actual, manteniendo alta velocidad de respuesta
+
+### 38. Evolución del Modelo 1X2 con XGBoost y Optuna (Completo)
+- [x] Reemplazar `RandomForestClassifier` por `XGBClassifier`
+- [x] Configurar búsqueda de parámetros en `Optuna` optimizando `log_loss` multiclase con `TimeSeriesSplit`
+- [x] Adaptar pipeline y tests para verificar la consistencia e integración del modelo 1X2 evolucionado
+
 ---
 
 ## Próximos pasos
