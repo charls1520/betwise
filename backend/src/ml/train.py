@@ -10,6 +10,7 @@ from sklearn.compose import ColumnTransformer
 from sklearn.pipeline import Pipeline
 from sklearn.model_selection import TimeSeriesSplit, train_test_split
 from sklearn.metrics import accuracy_score, mean_absolute_error, mean_squared_error, log_loss
+from sklearn.utils.class_weight import compute_sample_weight
 from xgboost import XGBRegressor, XGBClassifier
 import numpy as np
 import optuna
@@ -39,7 +40,8 @@ def optimize_xgboost_classifier(X, y, n_trials=10):
             
             # Ajustamos n_jobs=1 por problemas de timeout en Docker
             model = XGBClassifier(**params, n_jobs=1)
-            model.fit(X_train_cv_imp, y_train_cv)
+            weights = compute_sample_weight(class_weight='balanced', y=y_train_cv)
+            model.fit(X_train_cv_imp, y_train_cv, sample_weight=weights)
             
             preds = model.predict_proba(X_val_cv_imp)
             losses.append(log_loss(y_val_cv, preds, labels=[0, 1, 2]))
@@ -131,7 +133,8 @@ def train_and_save_models(df: pd.DataFrame, model_dir: str = "models"):
                 ('xgb_clf', XGBClassifier(**best_params_winner, n_jobs=1))
             ])
             print("Fitting Winner Model...")
-            winner_clf.fit(X_train, y_train)
+            weights = compute_sample_weight(class_weight='balanced', y=y_train)
+            winner_clf.fit(X_train, y_train, xgb_clf__sample_weight=weights)
             print("Fitted Winner Model.")
             
             y_pred = winner_clf.predict(X_test)
