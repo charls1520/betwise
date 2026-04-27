@@ -10,6 +10,8 @@ from src.utils.logger import get_logger
 from src.ingestion.validators import NewsArticle, validate_volume
 from src.ingestion.state import get_last_run, update_last_run
 from datetime import datetime
+from src.ml.inference import predict_matches
+from src.utils.telegram_notifier import TelegramNotifier
 
 load_dotenv()
 logger = get_logger()
@@ -94,6 +96,20 @@ def run_daily_scraping(odds_api_key: str = None):
         update_last_run("understat")
         xg_file = save_raw_data("xg", all_xg)
         logger.info(f"Saved multi-league xG to {xg_file}")
+
+    logger.info("Running ML inference on new odds...")
+    if len(all_odds) > 0:
+        try:
+            predictions = predict_matches(all_odds)
+            logger.info(f"Generated predictions for {len(predictions)} matches. Notifying Telegram...")
+            
+            notifier = TelegramNotifier()
+            for pred in predictions:
+                notifier.send_prediction(pred)
+                
+            logger.info("Telegram notifications sent.")
+        except Exception as e:
+            logger.error(f"Failed to run inference or send notifications: {e}")
 
 if __name__ == "__main__":
     run_daily_scraping()
